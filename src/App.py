@@ -9,9 +9,11 @@ def main():
     while True:
         print(game_board.get_moves())
         (x, y) = input(">>").split(",")
+        start = time.time()
         game_board.play((int(x),int(y)))
         print(game_board)
-        
+        end = time.time()
+        print(end - start)        
         
     # print(game_board.get_moves())
     # game_board.play((5,4))
