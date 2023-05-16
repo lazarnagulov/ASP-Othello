@@ -1,4 +1,5 @@
-from structures import TreeNode, Tree
+from Board import Board, Player
+
 class Node(object):
     def __init__(self):
         self.children: list = []
@@ -30,8 +31,8 @@ class Bot(object):
                 if beta <= alpha:
                     break
             return minEval
-            
-        
+    
+             
         
     
 
