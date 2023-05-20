@@ -17,8 +17,7 @@ class Bot(object):
         moves: dict[tuple[int, int], list[tuple[int, int]]] = Game.get_moves(board, player)
         #TODO: end game condition
         if depth == 0:
-            #TODO: heruistic 
-            return 0
+            return Game.get_board_score(board, player)
         
         if maximizingPlayer:
             maxEval: int = Bot.NEGATIVE_INFINITY

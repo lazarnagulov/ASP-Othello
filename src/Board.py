@@ -2,7 +2,7 @@ import Matrix
 import sys
 
 class Player(object):
-    """Player enumaration
+    """Player enumaration. BLACK and WHITE
     """
     BLACK = 0
     WHITE = 1
@@ -20,7 +20,7 @@ class Player(object):
         return Player.BLACK if player == Player.WHITE else Player.WHITE
 
 class BoardSymbol(object):
-    """BoardSyombol enumeration
+    """BoardSyombol enumeration. WHITE, BLACK EMPTY and LEGAL_MOVE
     """
     WHITE = "○"
     BLACK = "●"
@@ -53,7 +53,8 @@ class Board(object):
     
     def __init__(self):
         """
-        Create board with starting tiles.
+        Create board with starting tiles. Board is represented by two 64 bit binary numbers. Occupied are all occupied positions on board (1 if occupied 0 if not)
+        and color are all tiles position on board (1 if tile is white, 0 if tile is black). 
         """
         self.occupied: int = 0
         self.color: int = 0
@@ -64,12 +65,15 @@ class Board(object):
         self.set_tile((4,3), Player.BLACK)
 
     def get_tile(self, board: int, position: tuple[int, int]) -> int:
-        """Check if position on board is occuptied or which player is in that position.\n
-        Arguments
-            board (int): board.color or board.occupied\n
-            position (tuple[int, int]): position on board
-        Returns
-            int: 1 if position is occupied / white is on that postion and 0 if position is not occupied / black is on that position 
+        """Checks occupied or color number, depending on board argument.
+
+        Args:
+            board (int): board.color or board.occupied
+            
+            position (tuple[int, int]): postion on board (row, column)
+
+        Returns:
+            int: Returns bit on `8*row + column` position, which represents occupation or tile on board
         """
         if sys.byteorder == "little":
             return (board & Matrix.DECODE_MATRIX[position[0]][position[1]]) >> (position[0] * 8 + position[1])
@@ -80,15 +84,15 @@ class Board(object):
         """Reverse tile on position. Does nothing if position is empty.
 
         Args:
-            position (tuple[int, int]): position
+            position (tuple[int, int]): position (row, column)
         """
         self.color ^= Matrix.DECODE_MATRIX[position[0]][position[1]]
     
     def set_tile(self, position: tuple[int, int], player: Player) -> None:
-        """Occupies tile on position
+        """Occupies tile on position.
 
         Args:
-            position (tuple[int, int]): position
+            position (tuple[int, int]): position (row, column)
             player (Player): player
         """
         self.occupied |= Matrix.DECODE_MATRIX[position[0]][position[1]]
