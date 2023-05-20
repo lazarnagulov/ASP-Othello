@@ -1,30 +1,26 @@
-from Board import Board, Player, GameResult
+from Game import Board, BoardSymbol, Player, Game
 import time
 
 def main():
-    game_board = Board()
-    # start = time.time()
+    game_board: Board = Board()
+    # bot = Bot()
+    
     while True:
-        game_board.get_moves(game_board._current_player)
-        print(f"Current Player: {game_board._current_player}")
-        print(f"Score: {game_board.print_score()}")
-        print(game_board)
-      
-        if game_board._legal_moves == {}:
-            print(game_board.get_winner()) 
-            break
-
-        (x, y) = input(">>").split(",")
-        # start = time.time()
-        game_board.play((int(x),int(y)))
-        # end = time.time()
-        # print(end - start)        
-        
-    # print(game_board.get_moves())
-    # game_board.play((5,4))
-    # print(game_board)
-    # # end = time.time()
-    # print(end - start)
+        Game.print_turn()
+        Game.legal_moves = Game.get_moves(game_board, Game.current_player)
+        Game.print_score()
+        Game.print_board(game_board)
+        while True:
+            try:
+                op = input(">> ")
+                if op == "end":
+                    return
+                (x,y) = op.split(",")
+            except:
+                print("Invalid input!")
+            if Game.play(game_board, Game.current_player, (int(x),int(y))):
+               break  
+        Game.switch_player()
         
 if __name__ == "__main__":
     main()

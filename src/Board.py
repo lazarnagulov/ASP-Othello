@@ -1,296 +1,108 @@
-import copy
+import Matrix
+import sys
+
 class Player(object):
+    """Player enumaration
+    """
+    BLACK = 0
+    WHITE = 1
+
+    @staticmethod
+    def get_opponent(player):
+        """Gets player's oppoenent
+
+        Args:
+            player (Player): player
+
+        Returns:
+            Player: player's opponent
+        """
+        return Player.BLACK if player == Player.WHITE else Player.WHITE
+
+class BoardSymbol(object):
+    """BoardSyombol enumeration
+    """
     WHITE = "○"
     BLACK = "●"
     EMPTY = "□"
     LEGAL_MOVE = "■"
     
     @staticmethod
-    def get_opponent(player):
-        return Player.BLACK if player == Player.WHITE else Player.WHITE
+    def get_symbol(player: Player):
+        """Converts player to symbol.
+        
+        Args:
+            player (Player): player
 
-class GameResult(object):
-    WHITE_WINS = "White wins!"
-    BLACK_WINS = "Black wins!"
-    DRAW = "DRAW!"
-    NO_WINNER = ""
+        Returns:
+            BoardSymbol: player's symbol
+        """
+        if player == Player.BLACK:
+            return BoardSymbol.BLACK
+        else:
+            return BoardSymbol.WHITE
 
 class Board(object):
-    DIRECTIONS: list = [(0,1), (1,0), (-1,0), (0,-1), (1,1), (-1,1), (1,-1), (-1,-1)]
-    SIZE: int = 8    
-    HEURISTIC_MATRIX: list[list[int]] = [
-        [20, -3, 11, 8, 8, 11, -3, 20],
-        [-3, -7, -4, 1, 1, -4, -7, -3],
-        [11, -4, 2, 2, 2, 2, -4, 11],
-        [8, 1, 2, -3, -3, 2, 1, 8],
-        [8, 1, 2, -3, -3, 2, 1, 8],
-        [11, -4, 2, 2, 2, 2, -4, 11],
-        [-3, -7, -4, 1, 1, -4, -7, -3],
-        [20, -3, 11, 8, 8, 11, -3, 20]
-    ]
-
+    """
+    Othello board class
+    """
+    SIZE: int = 8
+    """
+    Othello board size = 8
+    """
+    
     def __init__(self):
-        self._board: list[list[Player]] = [[Player.EMPTY for _ in range(Board.SIZE)] for _ in range(Board.SIZE)]
-        self._current_player: Player = Player.BLACK
-        self._black_tiles: int = 2
-        self._white_tiles: int = 2
-
-
-        self._board[3][3] = Player.WHITE
-        self._board[3][4] = Player.BLACK
-        self._board[4][4] = Player.WHITE
-        self._board[4][3] = Player.BLACK
-    
-        self._legal_moves: dict[list[tuple[int, int]]] = self.__find_legal_moves(self._current_player)
+        """
+        Create board with starting tiles.
+        """
+        self.occupied: int = 0
+        self.color: int = 0
         
-    def __str__(self):
-        board: str = "# "
-        for i in range(Board.SIZE):
-            board += str(i) + " "
-        board += "\n"
-        for i in range(Board.SIZE):
-            for j in range(Board.SIZE):
-                if j == 0:
-                    board += str(i) + " "
-                if (i,j) in self._legal_moves:
-                    board += Player.LEGAL_MOVE + " "
-                    continue
-                board += self._board[i][j] + " "
-            board += "\n"
-        return board
-    
-    def __is_legal_move(self, player: Player, position: tuple[int, int]) -> bool:
-        opponents: list[tuple[int, int]] = []
-        if self.get_board_value(position) != Player.EMPTY:
-            return (False, [])
-        
-        opponents = self.__get_opponents(position, player)
-        return (len(opponents) > 0, opponents)
-    
-    def __get_opponents(self, position: tuple[int, int], player: Player) -> list[tuple[int,int]]:
-        opponents: list[tuple[int, int]] = []
-        for direction in Board.DIRECTIONS:
-            opps: list[tuple[int, int]] = self.__get_opponents_in_direction(position, player, direction)
-            if not opps:
-                continue
-            opponents += opps
+        self.set_tile((3,3), Player.WHITE)
+        self.set_tile((3,4), Player.BLACK)
+        self.set_tile((4,4), Player.WHITE)
+        self.set_tile((4,3), Player.BLACK)
 
-        return opponents
+    def get_tile(self, board: int, position: tuple[int, int]) -> int:
+        """Check if position on board is occuptied or which player is in that position.\n
+        Arguments
+            board (int): board.color or board.occupied\n
+            position (tuple[int, int]): position on board
+        Returns
+            int: 1 if position is occupied / white is on that postion and 0 if position is not occupied / black is on that position 
+        """
+        if sys.byteorder == "little":
+            return (board & Matrix.DECODE_MATRIX[position[0]][position[1]]) >> (position[0] * 8 + position[1])
+        else:
+            return (board & Matrix.DECODE_MATRIX[position[0]][position[1]]) << (position[0] * 8 + position[1])
             
-    def __get_opponents_in_direction(self, position: tuple[int, int], player: Player, direction: tuple[int,int]) -> list[tuple[int, int]]:
-        opponents: list[tuple[int, int]] = []
-        current_position = (position[0] + direction[0], position[1] + direction[1])
-        opponent: Player = Player.get_opponent(player)
-        
-        while self.__is_inside_board(current_position) and self.get_board_value(current_position) != Player.EMPTY:
-            if self.get_board_value(current_position) == opponent:
-                opponents += [current_position] 
-                current_position = (current_position[0] + direction[0], current_position[1] + direction[1])
-            else:
-                return opponents
-        return []
+    def replace_opponent(self, position: tuple[int, int]) -> None:
+        """Reverse tile on position. Does nothing if position is empty.
 
-    def __is_inside_board(self, move: tuple[int, int]) -> bool:
-        return (move[0] >= 0 and move[0] < Board.SIZE) and (move[1] >= 0 and move[1] < Board.SIZE)
+        Args:
+            position (tuple[int, int]): position
+        """
+        self.color ^= Matrix.DECODE_MATRIX[position[0]][position[1]]
     
-    def __find_legal_moves(self, player: Player) -> dict[list[tuple[int, int]]]:
-        moves: dict[list[tuple[int, int]]] = {}
-        opponents: list[tuple[int, int]] = []
-        for i in range(Board.SIZE):
-            for j in range(Board.SIZE):
-                is_legal = self.__is_legal_move(player, (i,j))
-                if is_legal[0]:
-                    moves[(i,j)] = is_legal[1]
-                    # self._board[i][j] = Player.LEGAL
+    def set_tile(self, position: tuple[int, int], player: Player) -> None:
+        """Occupies tile on position
 
-        return moves
-    
-    def get_winner(self) -> GameResult:
-        if self._white_tiles > self._black_tiles:
-            return GameResult.WHITE_WINS
-        elif self._white_tiles < self._black_tiles:
-            return GameResult.BLACK_WINS
-        elif self._white_tiles == self._black_tiles:
-            return GameResult.DRAW
-        return GameResult.NO_WINNER
-    
-    def get_heuristic(self, board: list[list[str]]) -> float:
-        player_tiles: int = 0
-        opponent_tiles: int = 0
-        
-        player_front: int = 0
-        opponent_front: int = 0
-        
-        player = self._current_player
-        opponent = Player.get_opponent(self._current_player)
-        
-        score_parity: float = 0
-        score_frontier: float = 0
-        score_corner: float = 0
-        score_corcer_closeness: float = 0
-        score_mobility: float = 0
-        score: float = 0
-        
-        for i in range(Board.SIZE):
-            for j in range(Board.SIZE):
-                if board[i][j] == player:
-                    player_tiles += 1
-                    score += Board.HEURISTIC_MATRIX[i][j]
-                elif board[i][j] == opponent:
-                    opponent_tiles += 1
-                    score -= Board.HEURISTIC_MATRIX[i][j]
-                if board[i][j] != Player.EMPTY:
-                    for direction in Board.DIRECTIONS:
-                        x, y = i + direction[0], j + direction[1]
-                        if self.__is_inside_board((x,y)) and board[x][y] == Player.EMPTY:
-                            if board[i][j] == player:
-                                player_front += 1
-                            else:
-                                opponent_front += 1
-                            break
-       
-        if player_tiles > opponent_tiles:
-            score_parity = (100.0 * player_tiles)/(player_tiles + opponent_tiles)
-        elif player_tiles < opponent_tiles:
-            score_parity = -(100.0 * player_tiles)/(player_tiles + opponent_tiles)
-        else:
-            score_parity = 0
+        Args:
+            position (tuple[int, int]): position
+            player (Player): player
+        """
+        self.occupied |= Matrix.DECODE_MATRIX[position[0]][position[1]]
+        if player == Player.WHITE:
+            self.color |= Matrix.DECODE_MATRIX[position[0]][position[1]]                            
 
-        if player_front > opponent_front:
-            score_frontier = (100.0 * player_front)/(player_front + opponent_front)
-        elif player_front < opponent_front:
-            score_frontier = -(100.0 * player_front)/(player_front + opponent_front)
-        else:
-            score_frontier = 0
-        
-        player_tiles = opponent_tiles = 0
-        if board[0][0] == player:
-            player_tiles += 1
-        elif board[0][0] == opponent:
-            opponent_tiles += 1
-        if board[0][7] == player:
-            player_tiles += 1
-        elif board[0][7] == opponent:
-            opponent_tiles += 1
-        if board[7][0] == player:
-            player_tiles += 1
-        elif board[7][0] == opponent:
-            opponent_tiles += 1
-        if board[7][7] == player:
-            player_tiles += 1
-        elif board[7][7] == opponent:
-            opponent_tiles += 1
-        score_corner = 25 * (player_tiles - opponent_tiles)
-        
-        player_tiles = opponent_tiles = 0
-        if board[0][0] == Player.EMPTY:
-            if board[0][1] == player:
-                player_tiles += 1
-            elif board[0][1] == opponent:
-                opponent_tiles += 1
-            if board[1][1] == player:
-                player_tiles += 1
-            elif board[1][1] == opponent:
-                opponent_tiles += 1
-            if board[1][0] == player:
-                player_tiles += 1
-            elif board[1][0] == opponent:
-                opponent_tiles += 1
-                
-        if board[0][7] == Player.EMPTY:
-            if board[0][6] == player:
-                player_tiles += 1
-            elif board[0][6] == opponent:
-                opponent_tiles += 1
-            if board[1][6] == player:
-                player_tiles += 1
-            elif board[1][6] == opponent:
-                opponent_tiles += 1
-            if board[1][7] == player:
-                player_tiles += 1
-            elif board[1][7] == opponent:
-                opponent_tiles += 1
-        
-        if board[7][0] == Player.EMPTY:
-            if board[7][1] == player:
-                player_tiles += 1
-            elif board[7][1] == opponent:
-                opponent_tiles += 1
-            if board[6][1] == player:
-                player_tiles += 1
-            elif board[6][1] == opponent:
-                opponent_tiles += 1
-            if board[6][0] == player:
-                player_tiles += 1
-            elif board[6][0] == opponent:
-                opponent_tiles += 1
-        
-        if board[7][7] == Player.EMPTY:
-            if board[6][7] == player:
-                player_tiles += 1
-            elif board[6][7] == opponent:
-                opponent_tiles += 1
-            if board[6][6] == player:
-                player_tiles += 1
-            elif board[6][6] == opponent:
-                opponent_tiles += 1
-            if board[7][6] == player:
-                player_tiles += 1
-            elif board[7][6] == opponent:
-                opponent_tiles += 1
-        score_corcer_closeness = -12.5 * (player_tiles - opponent_tiles)
-        
-        player_tiles = len(self.get_moves(player))
-        opponent_tiles = len(self.get_moves(opponent))
-        
-        if player_tiles > opponent_tiles:
-            score_mobility = (100.0 * player_tiles)/(player_tiles + opponent_tiles)
-        elif player_tiles < opponent_tiles:
-            score_mobility = -(100.0 * player_tiles)/(player_tiles + opponent_tiles)
-        else:
-            score_mobility = 0
-        
-        return 10 * score_parity + 801.724 * score_corner + 382.026 * score_corcer_closeness + 78.922 * score_mobility + 74.396 * score_frontier + 10 * score
-    
-    def play(self, move: tuple[int, int]) -> None:
-        if not self._legal_moves.get(move):
-            return
-        self.set_board_value(move, self._current_player)
-        for x, y in self._legal_moves[move]:
-            self.set_board_value((x,y), self._current_player)
-        
-        if self._current_player == Player.BLACK:
-            self._black_tiles += 1 + len(self._legal_moves[move])
-            self._white_tiles -= len(self._legal_moves[move])
-        else:
-            self._black_tiles -= len(self._legal_moves[move])
-            self._white_tiles += 1 + len(self._legal_moves[move])
-        
-        self.switch_players()
-    
-    def get_moves(self, player: Player) -> list[tuple[int,int]]:
-        moves_dict: dict[list[tuple[int,int]]] = self.__find_legal_moves(player)       
-        moves: list[tuple[int, int]] = []
-        for move in moves_dict:
-            moves.append(move)
+    def deepcopy(self):
+        """Deepcopies Board object.
 
-        self._legal_moves.clear()
-        self._legal_moves = moves_dict
-
-        return moves
-    
-    def board_copy(self):
-        return [[i for i in row] for row in self._board]
-    
-    def print_score(self) -> str:
-        return f"{Player.WHITE}: {self._white_tiles} - {Player.BLACK}: {self._black_tiles}"
-    
-    def switch_players(self) -> None:
-        self._legal_moves.clear()
-        self._current_player = Player.get_opponent(self._current_player)
+        Returns:
+            Board: copied board
+        """
+        new_board = Board()
+        new_board.color = self.color
+        new_board.occupied = self.occupied
+        return new_board
         
-    def get_board_value(self, coords: tuple[int, int]) -> str:
-        return self._board[coords[0]][coords[1]]
-    
-    def set_board_value(self, coords: tuple[int, int], value: Player):
-        self._board[coords[0]][coords[1]] = value
