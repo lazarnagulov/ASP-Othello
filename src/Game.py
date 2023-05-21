@@ -10,7 +10,7 @@ class GameResult(object):
     NO_WINNER = ""
 
 class Game(object):
-    """Othello game static class. It stores all possible moves, current player and number of tiles of each player.
+    """Othello game static class. It stores all possible moves, current player and number of tiles for each player.
     """    
     legal_moves: dict[tuple[int, int], list[tuple[int, int]]] = {}
     current_player: Player = Player.BLACK
@@ -73,7 +73,7 @@ class Game(object):
         """Checks if position is inside of board
 
         Args:
-            position (tuple[int, int]): position
+            position (tuple[int, int]): position (row, column)
 
         Returns:
             bool: True if position is inside, False if it is not.
@@ -87,8 +87,8 @@ class Game(object):
         Args:
             board (Board): board
             player (Player): player
-            position (tuple[int, int]): position
-            direction (tuple[int, int]): direction
+            position (tuple[int, int]): position (row, column)
+            direction (tuple[int, int]): direction - Matrix.DIRECTIONS
 
         Returns:
             list[tuple[int, int]]: list of all opponents and their position
@@ -117,7 +117,7 @@ class Game(object):
             position (tuple[int, int]): position (row, column)
 
         Returns:
-            list[tuple[int, int]]: All opponents and their postion
+            list[tuple[int, int]]: All opponents and their positions
         """
         opponents: list[tuple[int, int]] = []
         for direction in Matrix.DIRECTIONS:
@@ -144,21 +144,23 @@ class Game(object):
         
         return Game.__get_opponents(board, player, position)
         
+    @staticmethod
+    def has_ended(board: Board) -> bool:
+        if Game.get_moves(board, Player.BLACK) == {}:
+            return True
+        elif Game.get_moves(board, Player.WHITE) == {}:
+            return True
+        
+        return False
+    
     
     @staticmethod
-    def get_winner(legal_moves: dict[tuple[int, int], list[tuple[int, int]]] = None) -> GameResult:
+    def get_winner() -> GameResult:
         """Gets winner if the game has ended.
-
-        Args:
-            legal_moves (dict[tuple[int, int], list[tuple[int, int]]], optional): Legal moves. Defaults to Game.legal_moves.
 
         Returns:
             GameResult: Game result
         """
-        if not legal_moves:
-            legal_moves = Game.legal_moves 
-        if legal_moves != {}:
-            return GameResult.NO_WINNER
         if Game.white_tiles > Game.black_tiles:
             return GameResult.WHITE_WINS
         elif Game.white_tiles < Game.black_tiles:
@@ -168,15 +170,15 @@ class Game(object):
         return GameResult.NO_WINNER
     
     @staticmethod
-    def play(board: Board, player: Player, position: tuple[int, int], legal_moves: dict[tuple[int, int], list[tuple[int, int]]] = None) -> bool:
+    def play(board: Board, player: Player, position: tuple[int, int], legal_moves: dict[tuple[int, int], list[tuple[int, int]]] = None, bot: bool = False) -> bool:
         """Play a turn.
 
         Args:
             board (Board): board
             player (Player): player
-            position (tuple[int, int]): position (row, colimn)
+            position (tuple[int, int]): position (row, column)
             legal_moves (dict[tuple[int, int], list[tuple[int, int]]], optional): Legal moves. Defaults to Game.legal_moves.
-
+            bot (bool): True if bot calls method. Defaults to False
         Returns:
             bool: True if move is possible to make, False if it is not
         """
@@ -190,13 +192,14 @@ class Game(object):
         for opponent in legal_moves[position]:
             board.replace_opponent(opponent)
         
-        if player == Player.BLACK:
-            Game.black_tiles += 1 + len(legal_moves[position])
-            Game.white_tiles -= len(legal_moves[position])
-        else:
-            Game.black_tiles -= len(legal_moves[position])
-            Game.white_tiles += 1 + len(legal_moves[position])
-            
+        if not bot:
+            if player == Player.BLACK:
+                Game.black_tiles += 1 + len(legal_moves[position])
+                Game.white_tiles -= len(legal_moves[position])
+            else:
+                Game.black_tiles -= len(legal_moves[position])
+                Game.white_tiles += 1 + len(legal_moves[position])
+
         return True
 
     @staticmethod
@@ -362,7 +365,7 @@ class Game(object):
         return score
 
     @staticmethod
-    def print_turn():
+    def print_current_player():
         """Prints current player.
         """
         print(f"Current player: {BoardSymbol.get_symbol(Game.current_player)}")
