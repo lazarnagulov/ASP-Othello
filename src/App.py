@@ -1,7 +1,5 @@
 from Game import Board, BoardSymbol, Player, Game, GameResult
 from Bot import Bot
-import Matrix
-import time
 
 def main():
     # print("\t---> OTHELLO <---")
@@ -36,10 +34,13 @@ def main():
     bot: Bot = Bot()
    
     while True:
-        Game.print_current_player()
         Game.legal_moves = Game.get_moves(game_board, Game.current_player)
-        Game.print_score()
-        Game.print_board(game_board)
+        Game.print_status(game_board)
+        if Game.has_ended(game_board):
+            Game.print_status(game_board)
+            print(Game.get_winner())
+            break
+
         while True:
             try:
                 op: str = input(">> ")
@@ -49,18 +50,18 @@ def main():
             except:
                 print("Invalid input!")
             if Game.play(game_board, Game.current_player, (int(x),int(y))):
-               break  
+                Game.print_status(game_board)
+                break  
         
-        if Game.has_ended(game_board):
-            print(Game.get_winner(game_board))
+        Game.switch_player()
+        
+        bot_move: tuple[int, int] = bot.bot_move(game_board)
+        if bot_move:
+            Game.play(game_board, Game.current_player, bot_move, Game.get_moves(game_board, Player.WHITE))
+        else:
+            print(Game.get_winner())
             break
         
-        Game.print_current_player()
-        Game.print_score()
-        Game.print_board(game_board)
-               
-        Game.switch_player()
-        Game.play(game_board, Game.current_player, bot.bot_move(game_board), Game.get_moves(game_board, Player.WHITE))
         Game.switch_player()            
     
     

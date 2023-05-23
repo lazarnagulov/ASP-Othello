@@ -18,7 +18,7 @@ class Game(object):
     white_tiles: int = 2
     
     @staticmethod
-    def print_board(board: Board) -> None:
+    def __print_board(board: Board) -> None:
         """Prints board.
 
         Args:
@@ -32,9 +32,9 @@ class Game(object):
             for y in range(Board.SIZE):
                 if y == 0:
                     string_board += str(x) + " "
-                occupied: int = board.get_tile(board.occupied, (x,y))
+                occupied: int = board.is_occupied( (x,y))
                 if occupied:
-                    color: int = board.get_tile(board.color, (x,y))
+                    color: int = board.get_tile_color((x,y))
                     if color == Player.WHITE:
                         string_board += BoardSymbol.WHITE + " "
                     else:
@@ -97,8 +97,8 @@ class Game(object):
         current_position: tuple[int, int] = (position[0] + direction[0], position[1] + direction[1])
         opponent: Player = Player.get_opponent(player)
 
-        while Game.__is_inside_board(current_position) and board.get_tile(board.occupied, current_position):
-            if board.get_tile(board.color, current_position) == opponent:
+        while Game.__is_inside_board(current_position) and board.is_occupied( current_position):
+            if board.get_tile_color(current_position) == opponent:
                 opponents += [current_position]
                 current_position = (current_position[0] + direction[0], current_position[1] + direction[1])
             else:
@@ -139,7 +139,7 @@ class Game(object):
         Returns:
             list[tuple[int, int]]: Empty list if it is not possible, list of all oppoenents if it is.
         """
-        if board.get_tile(board.occupied, position):
+        if board.is_occupied( position):
             return []
         
         return Game.__get_opponents(board, player, position)
@@ -153,6 +153,11 @@ class Game(object):
         
         return False
     
+    @staticmethod
+    def print_status(board: Board):
+        Game.__print_current_player()
+        Game.__print_score()
+        Game.__print_board(board)
     
     @staticmethod
     def get_winner() -> GameResult:
@@ -227,18 +232,18 @@ class Game(object):
 
         for i in range(Board.SIZE):
             for j in range(Board.SIZE):
-                if board.get_tile(board.color, (i,j)) == player:
+                if board.get_tile_color((i,j)) == player:
                     d += Matrix.HEURISTIC_MATRIX[i][j]
                     player_tiles += 1
-                elif board.get_tile(board.color, (i,j)) == opponent:
+                elif board.get_tile_color((i,j)) == opponent:
                     d -= Matrix.HEURISTIC_MATRIX[i][j]
                     opponent_tiles += 1
-                if board.get_tile(board.occupied, (i,j)):
+                if board.is_occupied((i,j)):
                     for direction in Matrix.DIRECTIONS:
                         x = i + direction[0]
                         y = j + direction[1]
-                        if x >= 0 and x < 8 and y >= 0 and y < 8 and not board.get_tile(board.occupied, (i,j)):
-                            if board.get_tile(board.color, (i, j)) == player:
+                        if x >= 0 and x < 8 and y >= 0 and y < 8 and not board.is_occupied((i,j)):
+                            if board.get_tile_color((i, j)) == player:
                                 my_front_tiles += 1
                             else:
                                 opp_front_tiles += 1
@@ -261,92 +266,92 @@ class Game(object):
         player_tiles = 0
         opponent_tiles = 0
 
-        if board.get_tile(board.color, (0,0)) == player:
+        if board.get_tile_color((0,0)) == player:
             player_tiles += 1
-        elif board.get_tile(board.color, (0,0)) == opponent:
+        elif board.get_tile_color((0,0)) == opponent:
             opponent_tiles += 1
 
-        if board.get_tile(board.color, (0,7)) == player:
+        if board.get_tile_color((0,7)) == player:
             player_tiles += 1
-        elif board.get_tile(board.color, (0,7)) == opponent:
+        elif board.get_tile_color((0,7)) == opponent:
             opponent_tiles += 1
 
-        if board.get_tile(board.color, (7,0)) == player:
+        if board.get_tile_color((7,0)) == player:
             player_tiles += 1
-        elif board.get_tile(board.color, (7,0)) == opponent:
+        elif board.get_tile_color((7,0)) == opponent:
             opponent_tiles += 1
 
-        if board.get_tile(board.color, (7,7)) == player:
+        if board.get_tile_color((7,7)) == player:
             player_tiles += 1
-        elif board.get_tile(board.color, (7,7)) == opponent:
+        elif board.get_tile_color((7,7)) == opponent:
             opponent_tiles += 1
         c = 25 * (player_tiles - opponent_tiles)
 
         player_tiles = 0
         opponent_tiles = 0
 
-        if not board.get_tile(board.occupied,(0, 0)):
-            if board.get_tile(board.color, (0, 1)) == player:
+        if not board.is_occupied((0, 0)):
+            if board.get_tile_color((0, 1)) == player:
                 player_tiles += 1
-            elif board.get_tile(board.color, (0, 1)) == opponent:
+            elif board.get_tile_color((0, 1)) == opponent:
                 opponent_tiles += 1
 
-            if board.get_tile(board.color, (1, 1)) == player:
+            if board.get_tile_color((1, 1)) == player:
                 player_tiles += 1
-            elif board.get_tile(board.color, (1, 1)) == opponent:
+            elif board.get_tile_color((1, 1)) == opponent:
                 opponent_tiles += 1
 
-            if board.get_tile(board.color, (1, 0)) == player:
+            if board.get_tile_color((1, 0)) == player:
                 player_tiles += 1
-            elif board.get_tile(board.color, (1, 0)) == opponent:
+            elif board.get_tile_color((1, 0)) == opponent:
                 opponent_tiles += 1
 
-        if not board.get_tile(board.occupied, (0, 7)):
-            if board.get_tile(board.color, (0, 6)) == player:
+        if not board.is_occupied((0, 7)):
+            if board.get_tile_color((0, 6)) == player:
                 player_tiles += 1
-            elif board.get_tile(board.color, (0, 6)) == opponent:
+            elif board.get_tile_color((0, 6)) == opponent:
                 opponent_tiles += 1
 
-            if board.get_tile(board.color, (1, 6)) == player:
+            if board.get_tile_color((1, 6)) == player:
                 player_tiles += 1
-            elif board.get_tile(board.color, (1, 6)) == opponent:
+            elif board.get_tile_color((1, 6)) == opponent:
                 opponent_tiles += 1
 
-            if board.get_tile(board.color, (1, 7)) == player:
+            if board.get_tile_color((1, 7)) == player:
                 player_tiles += 1
-            elif board.get_tile(board.color, (1, 7)) == opponent:
+            elif board.get_tile_color((1, 7)) == opponent:
                 opponent_tiles += 1
 
-        if not board.get_tile(board.occupied, (7, 0)):
-            if board.get_tile(board.color, (7, 1)) == player:
+        if not board.is_occupied((7, 0)):
+            if board.get_tile_color((7, 1)) == player:
                 player_tiles += 1
-            elif board.get_tile(board.color, (7, 1)) == opponent:
+            elif board.get_tile_color((7, 1)) == opponent:
                 opponent_tiles += 1
 
-            if board.get_tile(board.color, (6, 1)) == player:
+            if board.get_tile_color((6, 1)) == player:
                 player_tiles += 1
-            elif board.get_tile(board.color, (6, 1)) == opponent:
+            elif board.get_tile_color((6, 1)) == opponent:
                 opponent_tiles += 1
 
-            if board.get_tile(board.color, (6, 0)) == player:
+            if board.get_tile_color((6, 0)) == player:
                 player_tiles += 1
-            elif board.get_tile(board.color, (6, 0)) == opponent:
+            elif board.get_tile_color((6, 0)) == opponent:
                 opponent_tiles += 1
 
-        if not board.get_tile(board.occupied, (7, 7)):
-            if board.get_tile(board.color, (6, 7)) == player:
+        if not board.is_occupied((7, 7)):
+            if board.get_tile_color((6, 7)) == player:
                 player_tiles += 1
-            elif board.get_tile(board.color, (6, 7)) == opponent:
+            elif board.get_tile_color((6, 7)) == opponent:
                 opponent_tiles += 1
 
-            if board.get_tile(board.color, (6, 6)) == player:
+            if board.get_tile_color((6, 6)) == player:
                 player_tiles += 1
-            elif board.get_tile(board.color, (6, 6)) == opponent:
+            elif board.get_tile_color((6, 6)) == opponent:
                 opponent_tiles += 1
 
-            if board.get_tile(board.color, (7, 6)) == player:
+            if board.get_tile_color((7, 6)) == player:
                 player_tiles += 1
-            elif board.get_tile(board.color, (7, 6)) == opponent:
+            elif board.get_tile_color((7, 6)) == opponent:
                 opponent_tiles += 1
 
         l = -12.5 * (player_tiles - opponent_tiles)
@@ -365,13 +370,13 @@ class Game(object):
         return score
 
     @staticmethod
-    def print_current_player():
+    def __print_current_player():
         """Prints current player.
         """
         print(f"Current player: {BoardSymbol.get_symbol(Game.current_player)}")
 
     @staticmethod
-    def print_score():
+    def __print_score():
         """Prints current score.
         """
         print(f"{BoardSymbol.get_symbol(Player.WHITE)}: {Game.white_tiles} - {BoardSymbol.get_symbol(Player.BLACK)}: {Game.black_tiles}")

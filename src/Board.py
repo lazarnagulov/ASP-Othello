@@ -69,36 +69,39 @@ class Board(object):
         hash_value: int = 0
         for x in range(Board.SIZE):
             for y in range(Board.SIZE):
-                occupied: int = self.get_tile(self.occupied, (x,y))
-                if occupied:
-                    color: int = self.get_tile(self.color, (x,y))
-                    if color == 1:
-                        hash_value ^= -1
-                    else:
-                        hash_value ^= 1
-                else:
+                color: int = self.get_tile_color((x,y))
+                if color == 1:
+                    hash_value ^= -1
+                elif color == -1:
                     hash_value ^= 0
+                else:
+                    hash_value ^= 1
         return hash_value
 
-    def get_tile(self, board: int, position: tuple[int, int]) -> int:
-        """Checks occupied or color number, depending on board argument. Color only works on occupied positions.
+    def is_occupied(self, position: tuple[int, int]) -> bool:
+        """Checks if board is occupied in position.
 
         Args:
-            board (int): board.color or board.occupied\n
-            position (tuple[int, int]): postion on board (row, column)
+            position (tuple[int, int]): position (row, column)
 
         Returns:
-            int: Returns bit on `8*row + column` position, which represents occupation or tile on board.
+            bool: True if position is occupied 
         """
+        return bool((self.occupied & Matrix.DECODE_MATRIX[position[0]][position[1]]) >> (position[0] * 8 + position[1])) 
+
+    def get_tile_color(self, position: tuple[int, int]) -> int:
+        """Gets the color in position.
+
+        Args:
+            position (tuple[int, int]): position (row, column)
+
+        Returns:
+            int: Returns player in position. If position is empty, returns -1
+        """
+        if self.is_occupied(position):
+            return (self.color & Matrix.DECODE_MATRIX[position[0]][position[1]]) >> (position[0] * 8 + position[1])
+        return -1
         
-        offset: int = position[0] * 8 + position[1] 
-        
-                
-        if sys.byteorder == "little":
-            return (board & Matrix.DECODE_MATRIX[position[0]][position[1]]) >> offset
-        else:
-            return (board & Matrix.DECODE_MATRIX[position[0]][position[1]]) << offset
-            
     def replace_opponent(self, position: tuple[int, int]) -> None:
         """Reverse tile on position. Does nothing if position is empty.
 
