@@ -1,5 +1,4 @@
 import Matrix
-import sys
 
 class Player(object):
     """Player enumaration. BLACK and WHITE. They can only be binary units (0 and 1).
@@ -65,19 +64,6 @@ class Board(object):
         self.set_tile((4,3), Player.BLACK)
 
     
-    def __hash__(self):
-        hash_value: int = 0
-        for x in range(Board.SIZE):
-            for y in range(Board.SIZE):
-                color: int = self.get_tile_color((x,y))
-                if color == 1:
-                    hash_value ^= -1
-                elif color == -1:
-                    hash_value ^= 0
-                else:
-                    hash_value ^= 1
-        return hash_value
-
     def is_occupied(self, position: tuple[int, int]) -> bool:
         """Checks if board is occupied in position.
 

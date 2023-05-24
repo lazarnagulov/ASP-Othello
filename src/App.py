@@ -1,35 +1,7 @@
-from Game import Board, BoardSymbol, Player, Game, GameResult
+from Game import Board, Player, Game
 from Bot import Bot
 
 def main():
-    # print("\t---> OTHELLO <---")
-    # print("Commands:")
-    # print("\tstart pvp - starts player vs player")
-    # print("\tstart pvb - starts player vs bot")
-    # print("\tstart bvb - start bot vs bot")
-    # print("\texit - exits program")
-
-    # while True:
-    #     try:    
-    #         op: str = input(">> ")
-    #         if op == "exit":
-    #             return
-    #         (op1, op2) = op.split(" ")
-    #         if op1 != "start":
-    #             print("Invalid input")
-    #             continue
-    #         elif op2 == "pvp":
-    #             pass # start pvp mod
-    #         elif op2 == "pvb":
-    #             pass # start pvb mod
-    #         elif op2 == "bvb":
-    #             pass # start bvb mod
-    #         else:
-    #             print("Invalid input")
-    #             continue
-    #     except:
-    #         print("Invalid input")
-    
     game_board: Board = Board()
     bot: Bot = Bot()
    

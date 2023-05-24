@@ -1,5 +1,5 @@
 from Board import Board, Player
-from Game import Game, GameResult
+from Game import Game
 from math import inf
 import time
 
@@ -24,7 +24,7 @@ class Bot(object):
         Returns:
             tuple[float, tuple[int, int]]: score and the best move found
         """
-        if time.time() - start_time > 3.0:
+        if time.time() - start_time >= 3.0:
             Bot.bail = True
         board_hash: int = hash((board.color, board.occupied))
         transposition: tuple[int, int, tuple[int, int]] | None = Bot.transposition_table.get(board_hash)
@@ -90,11 +90,9 @@ class Bot(object):
         if move_count == 0:
             return None
 
-        # Bot.transposition_table = {}
         Bot.bail = False
         search_limit: float = (time_limit - 0.25) / move_count
         start_time: float = time.time()
-        
         
         while time.time() - start_time < search_limit and depth <= depth_limit:
             score, move = self.__minimax(board, depth, -inf, inf, True, Player.WHITE, start_time)

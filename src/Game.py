@@ -97,7 +97,7 @@ class Game(object):
         current_position: tuple[int, int] = (position[0] + direction[0], position[1] + direction[1])
         opponent: Player = Player.get_opponent(player)
 
-        while Game.__is_inside_board(current_position) and board.is_occupied( current_position):
+        while Game.__is_inside_board(current_position) and board.is_occupied(current_position):
             if board.get_tile_color(current_position) == opponent:
                 opponents += [current_position]
                 current_position = (current_position[0] + direction[0], current_position[1] + direction[1])
@@ -242,10 +242,10 @@ class Game(object):
                     for direction in Matrix.DIRECTIONS:
                         x = i + direction[0]
                         y = j + direction[1]
-                        if x >= 0 and x < 8 and y >= 0 and y < 8 and not board.is_occupied((i,j)):
+                        if x >= 0 and x < 8 and y >= 0 and y < 8 and not board.is_occupied((x,y)):
                             if board.get_tile_color((i, j)) == player:
                                 my_front_tiles += 1
-                            else:
+                            elif board.get_tile_color((i,j)) == opponent:
                                 opp_front_tiles += 1
                             break
                         
