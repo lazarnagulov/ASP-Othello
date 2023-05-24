@@ -47,13 +47,14 @@ def main():
                 if op == "exit":
                     return
                 (x,y) = op.split(",")
+            
+                if Game.play(game_board, Game.current_player, (int(x),int(y))):
+                    Game.switch_player()
+                    Game.print_status(game_board)
+                    break  
             except:
-                print("Invalid input!")
-            if Game.play(game_board, Game.current_player, (int(x),int(y))):
-                Game.print_status(game_board)
-                break  
-        
-        Game.switch_player()
+                    print("Invalid input!")
+                    continue
         
         bot_move: tuple[int, int] = bot.bot_move(game_board)
         if bot_move:
