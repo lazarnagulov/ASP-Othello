@@ -139,7 +139,7 @@ class Game(object):
         Returns:
             list[tuple[int, int]]: Empty list if it is not possible, list of all oppoenents if it is.
         """
-        if board.is_occupied( position):
+        if board.is_occupied(position):
             return []
         
         return Game.__get_opponents(board, player, position)
@@ -386,5 +386,4 @@ class Game(object):
         """Switches current player.
         """
         Game.current_player = Player.get_opponent(Game.current_player)
-        
         

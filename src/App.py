@@ -15,6 +15,7 @@ def main():
 
         while True:
             try:
+                print("Input: <row>,<column>")
                 op: str = input(">> ")
                 if op == "exit":
                     return
