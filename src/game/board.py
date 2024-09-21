@@ -13,7 +13,7 @@ class Board:
     Othello board size = 8
     """
     
-    def __init__(self):
+    def __init__(self) -> None:
         """
         Create board with starting tiles.         
         """

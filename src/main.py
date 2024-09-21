@@ -1,17 +1,33 @@
 from game.game import Board, Player, Game
 from typing import Optional
 from game.bot import Bot
+from ui.console_interface import ConsoleInterface
+from ui.user_interface import UserInterface
+from ui.gui import GUI
+import sys
 
 def main() -> None:
+    interface: Optional[UserInterface] = None
+    
+    if len(sys.argv) != 1:
+        match sys.argv[1]:
+            case "--console" | "-c": interface = ConsoleInterface()
+            case "--ui" | "-u": interface = GUI()
+            case _: interface = GUI()
+    else:
+        interface = ConsoleInterface()
+
     game_board: Board = Board()
-    bot: Bot = Bot()
+    bot: Bot = Bot()    
    
     while True:
         Game.legal_moves = Game.get_moves(game_board, Game.current_player)
-        Game.print_status(game_board)
+        interface.display_score(Game.white_tiles, Game.black_tiles)
+        interface.display_board(game_board, Game.legal_moves)
         if Game.has_ended(game_board):
-            Game.print_status(game_board)
-            print(Game.get_winner())
+            interface.display_score(Game.white_tiles, Game.black_tiles)
+            interface.display_board(game_board, Game.legal_moves)
+            interface.display_result(Game.get_winner())
             break
 
         while True:
@@ -24,7 +40,8 @@ def main() -> None:
             
                 if Game.play(game_board, Game.current_player, (int(x),int(y))):
                     Game.switch_player()
-                    Game.print_status(game_board)
+                    interface.display_score(Game.white_tiles, Game.black_tiles)
+                    interface.display_board(game_board, Game.legal_moves)
                     break  
             except:
                     print("Invalid input!")
@@ -34,7 +51,7 @@ def main() -> None:
         if bot_move:
             Game.play(game_board, Game.current_player, bot_move, Game.get_moves(game_board, Player.WHITE))
         else:
-            print(Game.get_winner())
+            interface.display_result(Game.get_winner())
             break
         
         Game.switch_player()            

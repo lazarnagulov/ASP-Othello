@@ -1,7 +1,6 @@
 from game.board import Board
 from typing import Optional
-from models.board_symbol import BoardSymbol, get_symbol
-from models.game_results import GameResult
+from models.game_result import GameResult
 from models.player import Player, get_opponent
 import util.matrix as Matrix
 
@@ -117,13 +116,7 @@ class Game:
             return True
         
         return False
-    
-    @staticmethod
-    def print_status(board: Board):
-        Game.__print_current_player()
-        Game.__print_score()
-        Game.__print_board(board)
-    
+        
     @staticmethod
     def get_winner() -> GameResult:
         """Gets winner if the game has ended.
@@ -335,45 +328,8 @@ class Game:
         return score
 
     @staticmethod
-    def __print_current_player():
-        """Prints current player.
-        """
-        print(f"Current player: {get_symbol(Game.current_player)}")
-
-    @staticmethod
-    def __print_score():
-        """Prints current score.
-        """
-        print(f"{get_symbol(Player.WHITE)}: {Game.white_tiles} - {get_symbol(Player.BLACK)}: {Game.black_tiles}")
-
-    @staticmethod
     def switch_player() -> None:
         """Switches current player.
         """
         Game.current_player = get_opponent(Game.current_player)
-    
-    @staticmethod
-    def __print_board(self) -> None:
-        string_board: str = "# "
-        for i in range(Board.SIZE):
-            string_board += str(i) + " "
-        string_board += "\n"
-        for x in range(Board.SIZE):
-            for y in range(Board.SIZE):
-                if y == 0:
-                    string_board += str(x) + " "
-                occupied: int = self.is_occupied( (x,y))
-                if occupied:
-                    color: int = self.get_tile_color((x,y))
-                    if color == Player.WHITE:
-                        string_board += BoardSymbol.WHITE + " "
-                    else:
-                        string_board += BoardSymbol.BLACK + " "
-                elif (x,y) in Game.legal_moves:
-                    string_board += BoardSymbol.LEGAL_MOVE + " "
-                else:
-                    string_board += BoardSymbol.EMPTY + " "
-            string_board += "\n"
-
-        print(string_board)
         
