@@ -351,4 +351,29 @@ class Game:
         """Switches current player.
         """
         Game.current_player = get_opponent(Game.current_player)
+    
+    @staticmethod
+    def __print_board(self) -> str:
+        string_board: str = "# "
+        for i in range(Board.SIZE):
+            string_board += str(i) + " "
+        string_board += "\n"
+        for x in range(Board.SIZE):
+            for y in range(Board.SIZE):
+                if y == 0:
+                    string_board += str(x) + " "
+                occupied: int = self.is_occupied( (x,y))
+                if occupied:
+                    color: int = self.get_tile_color((x,y))
+                    if color == Player.WHITE:
+                        string_board += BoardSymbol.WHITE + " "
+                    else:
+                        string_board += BoardSymbol.BLACK + " "
+                elif (x,y) in Game.legal_moves:
+                    string_board += BoardSymbol.LEGAL_MOVE + " "
+                else:
+                    string_board += BoardSymbol.EMPTY + " "
+            string_board += "\n"
+
+        print(string_board)
         

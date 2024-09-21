@@ -79,28 +79,3 @@ class Board:
         new_board.color = self.color
         new_board.occupied = self.occupied
         return new_board
-    
-    def __str__(self) -> str:
-        string_board: str = "# "
-        for i in range(Board.SIZE):
-            string_board += str(i) + " "
-        string_board += "\n"
-        for x in range(Board.SIZE):
-            for y in range(Board.SIZE):
-                if y == 0:
-                    string_board += str(x) + " "
-                occupied: int = self.is_occupied( (x,y))
-                if occupied:
-                    color: int = self.get_tile_color((x,y))
-                    if color == Player.WHITE:
-                        string_board += BoardSymbol.WHITE + " "
-                    else:
-                        string_board += BoardSymbol.BLACK + " "
-                elif (x,y) in game.Game.legal_moves:
-                    string_board += BoardSymbol.LEGAL_MOVE + " "
-                else:
-                    string_board += BoardSymbol.EMPTY + " "
-            string_board += "\n"
-
-        return string_board
-        
