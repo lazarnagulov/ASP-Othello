@@ -5,7 +5,7 @@ from models.game_results import GameResult
 from models.player import Player, get_opponent
 import util.matrix as Matrix
 
-class Game(object):
+class Game:
     """Othello game static class. It stores all possible moves, current player and number of tiles for each player.
     """    
     legal_moves: dict[tuple[int, int], list[tuple[int, int]]] = {}
