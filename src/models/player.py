@@ -1,10 +1,9 @@
-from enum import Enum, auto
 
-class Player(Enum):
+class Player:
     """Player enumaration. BLACK and WHITE. They can only be binary units (0 and 1).
     """
-    BLACK = auto
-    WHITE = auto
+    BLACK = 0
+    WHITE = 1
 
 def get_opponent(player) -> Player:
     """Gets player's oppoenent.

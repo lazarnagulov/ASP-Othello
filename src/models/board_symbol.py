@@ -1,7 +1,6 @@
-from enum import Enum
 from .player import Player
 
-class BoardSymbol(Enum):
+class BoardSymbol:
     """BoardSyombol enumeration. WHITE, BLACK EMPTY and LEGAL_MOVE
     """
     WHITE = "○"
@@ -10,7 +9,10 @@ class BoardSymbol(Enum):
     LEGAL_MOVE = "■"
     
     def __add__(self, other: str) -> str:
-        return self + other
+        return self.value + other
+    
+    def __str__(self) -> str:
+        return self.value
     
 def get_symbol(player: Player) -> BoardSymbol:
     """Converts player to symbol.

@@ -1,6 +1,6 @@
-from board import Board
-from enums.player import Player, get_opponent
-from game import Game
+from .board import Board
+from .game import Game
+from models.player import Player, get_opponent
 from math import inf
 from typing import Optional
 import time

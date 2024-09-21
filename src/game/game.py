@@ -1,9 +1,9 @@
-from board import Board
+from game.board import Board
 from typing import Optional
-from enums.board_symbol import BoardSymbol, get_symbol
-from enums.game_results import GameResult
-from enums.player import Player, get_opponent
-import matrix as Matrix
+from models.board_symbol import BoardSymbol, get_symbol
+from models.game_results import GameResult
+from models.player import Player, get_opponent
+import util.matrix as Matrix
 
 class Game(object):
     """Othello game static class. It stores all possible moves, current player and number of tiles for each player.

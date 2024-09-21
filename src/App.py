@@ -1,6 +1,6 @@
-from game import Board, Player, Game
+from game.game import Board, Player, Game
 from typing import Optional
-from Bot import Bot
+from game.bot import Bot
 
 def main() -> None:
     game_board: Board = Board()
