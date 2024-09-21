@@ -1,16 +1,18 @@
-from Board import Board, Player
-from Game import Game
+from board import Board
+from enums.player import Player, get_opponent
+from game import Game
 from math import inf
+from typing import Optional
 import time
 
 class Bot(object):
     
     bail = False
-    transposition_table: dict[int, tuple[int, int, tuple[int, int]]] = {}
+    transposition_table: dict[int, tuple[int, float, tuple]] = {}
     """Hashmap that stores the state of the game as hash(board) : (depth, score, move)
     """
 
-    def __minimax(self, board: Board, depth: int, alpha: int, beta: int, maximizingPlayer: bool, player: Player, start_time: float) -> tuple[float, tuple[int, int]]:
+    def __minimax(self, board: Board, depth: int, alpha: float, beta: float, maximizingPlayer: bool, player: Player, start_time: float) -> tuple[float, Optional[tuple]]:
         """Minimax algorithm that uses alpha beta pruning. 
 
         Args:
@@ -27,7 +29,7 @@ class Bot(object):
         if time.time() - start_time >= 3.0:
             Bot.bail = True
         board_hash: int = hash((board.color, board.occupied))
-        transposition: tuple[int, int, tuple[int, int]] | None = Bot.transposition_table.get(board_hash)
+        transposition: Optional[tuple[int, float, tuple]] = Bot.transposition_table.get(board_hash)
         if transposition and transposition[0] >= depth:
             return transposition[1], transposition[2]
 
@@ -38,13 +40,13 @@ class Bot(object):
             return score, None
         
         if maximizingPlayer:
-            max_eval: int = -inf
-            eval: int = -inf
-            best_move: tuple[int, int] = ()
+            max_eval: float = -inf
+            eval: float = -inf
+            best_move: tuple = ()
             for move in moves:
                 next_state: Board = board.deepcopy()
                 Game.play(next_state, player, move, moves, True)
-                eval, _ = self.__minimax(next_state, depth - 1, alpha, beta, False, Player.get_opponent(player), start_time)
+                eval, _ = self.__minimax(next_state, depth - 1, alpha, beta, False, get_opponent(player), start_time)
                 if eval > max_eval:
                     max_eval = eval
                     best_move = move
@@ -54,13 +56,13 @@ class Bot(object):
             Bot.transposition_table[board_hash] = (depth, max_eval, best_move)
             return max_eval, best_move
         else:
-            min_eval: int = inf
-            eval: int = inf
-            best_move: tuple[int, int] = ()
+            min_eval = inf
+            eval = inf
+            best_move = ()
             for move in moves:
-                next_state: Board = board.deepcopy()
+                next_state = board.deepcopy()
                 Game.play(next_state, player, move, moves, True)
-                eval, _ = self.__minimax(next_state, depth - 1, alpha, beta, True, Player.get_opponent(player), start_time)
+                eval, _ = self.__minimax(next_state, depth - 1, alpha, beta, True, get_opponent(player), start_time)
                 if eval < min_eval:
                     min_eval = eval
                     best_move = move
@@ -70,7 +72,7 @@ class Bot(object):
             Bot.transposition_table[board_hash] = (depth, min_eval, best_move)
             return min_eval, best_move        
     
-    def bot_move(self, board: Board, time_limit: float = 3.0, depth_limit: int = 7) -> tuple[int, int]:
+    def bot_move(self, board: Board, time_limit: float = 3.0, depth_limit: int = 7) -> Optional[tuple[int, int]]:
         """Finds the best possible move using minimax and iterative deeping.
 
         Args:
@@ -81,8 +83,8 @@ class Bot(object):
         Returns:
             tuple[int, int]: best possible move found
         """
-        best_score: int = -inf
-        best_move: tuple[int, int] = ()
+        best_score: float = -inf
+        best_move: Optional[tuple] = ()
         depth: int = 1
 
         move_count: int = len(Game.get_moves(board, Player.WHITE))

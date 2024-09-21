@@ -1,13 +1,9 @@
-from Board import Board, BoardSymbol, Player
-import Matrix
-
-class GameResult(object):
-    """Game result enumeration: WHITE_WINS, BLACK_WINS, DRAW and NO_WINNER
-    """
-    WHITE_WINS = "White wins!"
-    BLACK_WINS = "Black wins!"
-    DRAW = "DRAW!"
-    NO_WINNER = ""
+from board import Board
+from typing import Optional
+from enums.board_symbol import BoardSymbol, get_symbol
+from enums.game_results import GameResult
+from enums.player import Player, get_opponent
+import matrix as Matrix
 
 class Game(object):
     """Othello game static class. It stores all possible moves, current player and number of tiles for each player.
@@ -49,7 +45,7 @@ class Game(object):
 
     
     @staticmethod
-    def get_moves(board: Board, player: Player) -> dict[tuple[int, int], list[list[Player]]]:
+    def get_moves(board: Board, player: Player) -> dict[tuple[int, int], list[tuple[int, int]]]:
         """Gets all possible moves for player.
 
         Args:
@@ -95,7 +91,7 @@ class Game(object):
         """
         opponents: list[tuple[int, int]] = []
         current_position: tuple[int, int] = (position[0] + direction[0], position[1] + direction[1])
-        opponent: Player = Player.get_opponent(player)
+        opponent: Player = get_opponent(player)
 
         while Game.__is_inside_board(current_position) and board.is_occupied(current_position):
             if board.get_tile_color(current_position) == opponent:
@@ -175,7 +171,7 @@ class Game(object):
         return GameResult.NO_WINNER
     
     @staticmethod
-    def play(board: Board, player: Player, position: tuple[int, int], legal_moves: dict[tuple[int, int], list[tuple[int, int]]] = None, bot: bool = False) -> bool:
+    def play(board: Board, player: Player, position: tuple[int, int], legal_moves: Optional[dict[tuple[int, int], list[tuple[int, int]]]] = None, bot: bool = False) -> bool:
         """Play a turn.
 
         Args:
@@ -218,17 +214,17 @@ class Game(object):
         Returns:
             float: score
         """
-        opponent: Player = Player.get_opponent(player)
+        opponent: Player = get_opponent(player)
         player_tiles: int = 0
         opponent_tiles: int = 0
         my_front_tiles: int = 0
         opp_front_tiles: int = 0
-        p: int = 0
-        c: int = 0
-        l: int = 0
-        m: int = 0
-        f: int = 0
-        d: int = 0
+        p: float = 0
+        c: float = 0
+        l: float = 0
+        m: float = 0
+        f: float = 0
+        d: float = 0
 
         for i in range(Board.SIZE):
             for j in range(Board.SIZE):
@@ -373,17 +369,17 @@ class Game(object):
     def __print_current_player():
         """Prints current player.
         """
-        print(f"Current player: {BoardSymbol.get_symbol(Game.current_player)}")
+        print(f"Current player: {get_symbol(Game.current_player)}")
 
     @staticmethod
     def __print_score():
         """Prints current score.
         """
-        print(f"{BoardSymbol.get_symbol(Player.WHITE)}: {Game.white_tiles} - {BoardSymbol.get_symbol(Player.BLACK)}: {Game.black_tiles}")
+        print(f"{get_symbol(Player.WHITE)}: {Game.white_tiles} - {get_symbol(Player.BLACK)}: {Game.black_tiles}")
 
     @staticmethod
     def switch_player() -> None:
         """Switches current player.
         """
-        Game.current_player = Player.get_opponent(Game.current_player)
+        Game.current_player = get_opponent(Game.current_player)
         

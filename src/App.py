@@ -1,7 +1,8 @@
-from Game import Board, Player, Game
+from game import Board, Player, Game
+from typing import Optional
 from Bot import Bot
 
-def main():
+def main() -> None:
     game_board: Board = Board()
     bot: Bot = Bot()
    
@@ -29,7 +30,7 @@ def main():
                     print("Invalid input!")
                     continue
         
-        bot_move: tuple[int, int] = bot.bot_move(game_board)
+        bot_move: Optional[tuple[int, int]] = bot.bot_move(game_board)
         if bot_move:
             Game.play(game_board, Game.current_player, bot_move, Game.get_moves(game_board, Player.WHITE))
         else:

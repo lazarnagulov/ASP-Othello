@@ -1,47 +1,7 @@
-import Matrix
+from enums.player import Player
+import matrix as Matrix
 
-class Player(object):
-    """Player enumaration. BLACK and WHITE. They can only be binary units (0 and 1).
-    """
-    BLACK = 0
-    WHITE = 1
-
-    @staticmethod
-    def get_opponent(player):
-        """Gets player's oppoenent.
-
-        Args:
-            player (Player): player
-
-        Returns:
-            Player: player's opponent
-        """
-        return Player.BLACK if player == Player.WHITE else Player.WHITE
-
-class BoardSymbol(object):
-    """BoardSyombol enumeration. WHITE, BLACK EMPTY and LEGAL_MOVE
-    """
-    WHITE = "○"
-    BLACK = "●"
-    EMPTY = "□"
-    LEGAL_MOVE = "■"
-    
-    @staticmethod
-    def get_symbol(player: Player):
-        """Converts player to symbol.
-        
-        Args:
-            player (Player): player
-
-        Returns:
-            BoardSymbol: player's symbol
-        """
-        if player == Player.BLACK:
-            return BoardSymbol.BLACK
-        else:
-            return BoardSymbol.WHITE
-
-class Board(object):
+class Board:
     """
     Othello board class. Board is represented by two 64 bit binary numbers. Occupied are all occupied positions on board (1 if occupied 0 if not)
     and color are all tiles position on board (1 if tile is white, 0 if tile is black). 
@@ -107,7 +67,7 @@ class Board(object):
         if player == Player.WHITE:
             self.color |= Matrix.DECODE_MATRIX[position[0]][position[1]]                            
 
-    def deepcopy(self):
+    def deepcopy(self) -> 'Board':
         """Deepcopies Board object.
 
         Returns:
