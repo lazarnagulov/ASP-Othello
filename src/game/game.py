@@ -14,37 +14,6 @@ class Game:
     white_tiles: int = 2
     
     @staticmethod
-    def __print_board(board: Board) -> None:
-        """Prints board.
-
-        Args:
-            board (Board): board
-        """
-        string_board: str = "# "
-        for i in range(Board.SIZE):
-            string_board += str(i) + " "
-        string_board += "\n"
-        for x in range(Board.SIZE):
-            for y in range(Board.SIZE):
-                if y == 0:
-                    string_board += str(x) + " "
-                occupied: int = board.is_occupied( (x,y))
-                if occupied:
-                    color: int = board.get_tile_color((x,y))
-                    if color == Player.WHITE:
-                        string_board += BoardSymbol.WHITE + " "
-                    else:
-                        string_board += BoardSymbol.BLACK + " "
-                elif (x,y) in Game.legal_moves:
-                    string_board += BoardSymbol.LEGAL_MOVE + " "
-                else:
-                    string_board += BoardSymbol.EMPTY + " "
-            string_board += "\n"
-        
-        print(string_board)
-
-    
-    @staticmethod
     def get_moves(board: Board, player: Player) -> dict[tuple[int, int], list[tuple[int, int]]]:
         """Gets all possible moves for player.
 
