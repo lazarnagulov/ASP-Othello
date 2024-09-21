@@ -5,7 +5,7 @@ from math import inf
 from typing import Optional
 import time
 
-class Bot(object):
+class Bot:
     
     bail = False
     transposition_table: dict[int, tuple[int, float, tuple]] = {}

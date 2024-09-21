@@ -7,3 +7,6 @@ class GameResult(Enum):
     BLACK_WINS = "Black wins!"
     DRAW = "DRAW!"
     NO_WINNER = ""
+    
+    def __str__(self) -> str:
+        return self.value
