@@ -163,7 +163,7 @@ class Game:
             board.replace_opponent(opponent)
         
         if not bot:
-            if player is Player.BLACK:
+            if player == Player.BLACK:
                 Game.black_tiles += 1 + len(legal_moves[position])
                 Game.white_tiles -= len(legal_moves[position])
             else:
