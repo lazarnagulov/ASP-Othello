@@ -163,7 +163,7 @@ class Game:
             board.replace_opponent(opponent)
         
         if not bot:
-            if player == Player.BLACK:
+            if player is Player.BLACK:
                 Game.black_tiles += 1 + len(legal_moves[position])
                 Game.white_tiles -= len(legal_moves[position])
             else:
@@ -353,7 +353,7 @@ class Game:
         Game.current_player = get_opponent(Game.current_player)
     
     @staticmethod
-    def __print_board(self) -> str:
+    def __print_board(self) -> None:
         string_board: str = "# "
         for i in range(Board.SIZE):
             string_board += str(i) + " "
