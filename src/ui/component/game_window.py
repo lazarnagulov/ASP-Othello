@@ -26,10 +26,19 @@ from PyQt5.QtCore import QTimer
 
 class GameWindow(QWidget):    
 
-    def __init__(self) -> None:
+    def __init__(self, argv: list[str]) -> None:
         super().__init__()
+        self.bot_on: bool = False
+        if len(argv) == 3:
+            match argv[2]:
+                case '--bot' | '-b': self.bot_on = True
+                case '--player' | '-p': self.bot_on = False
+                case _: self.bot_on = False
+
+        
         self.game_board: Board = Board()
-        self.bot: Bot = Bot()
+        if self.bot_on:
+            self.bot: Bot = Bot()
         Game.legal_moves = Game.get_moves(self.game_board, Game.current_player)
         
         self.app: QApplication = QApplication(sys.argv)      
@@ -81,9 +90,13 @@ class GameWindow(QWidget):
 
     def handle_click(self) -> None:
         if Game.play(self.game_board, Game.current_player, cast(Tile, self.sender()).position):
-            self.update_game_state()            
-            QTimer.singleShot(1, self.handle_bot_move) 
-
+            if self.bot_on:
+                self.update_game_state()            
+                QTimer.singleShot(10, self.handle_bot_move) 
+            else:
+                if Game.has_ended(self.game_board):
+                    self.display_result(Game.get_winner())
+                self.update_game_state()
         
     def handle_bot_move(self) -> None:
         bot_move: Optional[tuple[int, int]] = self.bot.bot_move(self.game_board)
@@ -91,11 +104,12 @@ class GameWindow(QWidget):
             Game.play(self.game_board, Game.current_player, bot_move, Game.get_moves(self.game_board, Player.WHITE))
         else:
             self.display_result(Game.get_winner())
-        
-        self.update_game_state()
+
         if Game.has_ended(self.game_board):
             self.display_result(Game.get_winner())
+        self.update_game_state()
 
+ 
     def update_game_state(self) -> None:
         Game.switch_player()  
         Game.legal_moves = Game.get_moves(self.game_board, Game.current_player)

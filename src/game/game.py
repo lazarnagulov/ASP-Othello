@@ -34,9 +34,9 @@ class Game:
         
     @staticmethod
     def has_ended(board: Board) -> bool:
-        if Game.get_moves(board, Player.BLACK) == {}:
+        if not Game.get_moves(board, Player.BLACK):
             return True
-        elif Game.get_moves(board, Player.WHITE) == {}:
+        elif not Game.get_moves(board, Player.WHITE):
             return True
         
         return False
