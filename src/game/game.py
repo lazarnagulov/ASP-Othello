@@ -1,4 +1,4 @@
-from game.board import Board
+from models.board import Board
 from typing import Optional
 from models.game_result import GameResult
 from models.player import Player, get_opponent
