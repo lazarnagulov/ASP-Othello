@@ -9,22 +9,38 @@ class Bot:
     
     bail = False
     transposition_table: dict[int, tuple[int, float, tuple]] = {}
-    """Hashmap that stores the state of the game as hash(board) : (depth, score, move)
     """
+    A dictionary that stores previously evaluated game states to optimize performance through transposition.
 
+    Key:
+        - `hash(board)`: An integer hash value representing the current state of the game board.
+
+    Value:
+        A tuple containing:
+            - `depth` (int): The search depth at which this state was evaluated.
+            - `score` (float): The evaluated score of the board state.
+            - `move` (Optional[Tuple[int, int]]): The best move associated with this state, or None if no move is available.
+
+    This transposition table allows for efficient retrieval and reuse of previously evaluated states, enhancing the performance of the Minimax algorithm with alpha-beta pruning.
+    """
+    
     def __minimax(self, board: Board, depth: int, alpha: float, beta: float, maximizingPlayer: bool, player: Player, start_time: float) -> tuple[float, Optional[tuple]]:
-        """Minimax algorithm that uses alpha beta pruning. 
+        """
+        Implements the Minimax algorithm with alpha-beta pruning for optimal decision-making in two-player games.
 
         Args:
-            board (Board): state of the board
-            depth (int): depth
-            alpha (int): alpha
-            beta (int): beta
-            maximizingPlayer (bool): is maximising player
-            player (Player): player
+            board (Board): The current state of the game board.
+            depth (int): The maximum depth to search in the game tree.
+            alpha (float): The best value that the maximizing player can guarantee at the current level or above.
+            beta (float): The best value that the minimizing player can guarantee at the current level or above.
+            maximizingPlayer (bool): Indicates whether the current player is the maximizing player.
+            player (Player): The player for whom the move is being evaluated.
+            start_time (float): The time when the search started, used for time-limiting the algorithm.
 
         Returns:
-            tuple[float, tuple[int, int]]: score and the best move found
+        
+            Tuple[float, Optional[Tuple[int, int]]]: A tuple containing the evaluated score and the best move (as coordinates) found for the current player, 
+            or None if no move is available.
         """
         if time.time() - start_time >= 3.0:
             Bot.bail = True
@@ -73,15 +89,17 @@ class Bot:
             return min_eval, best_move        
     
     def bot_move(self, board: Board, time_limit: float = 3.0, depth_limit: int = 7) -> Optional[tuple[int, int]]:
-        """Finds the best possible move using minimax and iterative deeping.
+        """Finds the best possible move using the Minimax algorithm with iterative deepening.
 
         Args:
-            board (Board): game state
-            time_limit (float, optional): Time limit. Defaults to 3.0
-            deth_limit (int, optional): Depth limit. Defaults to 7
+            board (Board): The current state of the game board.
+            time_limit (float, optional): The maximum time allowed for the search in seconds. Defaults to 3.0.
+            depth_limit (int, optional): The maximum depth to search in the game tree. Defaults to 7.
 
         Returns:
-            tuple[int, int]: best possible move found
+            
+            Optional[tuple[int, int]]: The coordinates of the best possible move found (row, column), 
+            or None if no move is available.
         """
         best_score: float = -inf
         best_move: Optional[tuple] = ()
