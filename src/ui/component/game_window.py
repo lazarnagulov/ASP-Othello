@@ -22,6 +22,8 @@ from PyQt5.QtWidgets import (
     QMessageBox
 )
 
+from PyQt5.QtCore import QTimer
+
 class GameWindow(QWidget):    
 
     def __init__(self) -> None:
@@ -78,15 +80,28 @@ class GameWindow(QWidget):
         self.setWindowTitle('Othello')
 
     def handle_click(self) -> None:
-        if(not Game.play(self.game_board, Game.current_player, cast(Tile, self.sender()).position)):
-            return
-        Game.switch_player()
+        if Game.play(self.game_board, Game.current_player, cast(Tile, self.sender()).position):
+            self.update_game_state()            
+            QTimer.singleShot(1, self.handle_bot_move) 
+
+        
+    def handle_bot_move(self) -> None:
+        bot_move: Optional[tuple[int, int]] = self.bot.bot_move(self.game_board)
+        if bot_move:
+            Game.play(self.game_board, Game.current_player, bot_move, Game.get_moves(self.game_board, Player.WHITE))
+        else:
+            self.display_result(Game.get_winner())
+        
+        self.update_game_state()
+        if Game.has_ended(self.game_board):
+            self.display_result(Game.get_winner())
+
+    def update_game_state(self) -> None:
+        Game.switch_player()  
         Game.legal_moves = Game.get_moves(self.game_board, Game.current_player)
         self.display_current_player(Game.current_player)
         self.display_board(self.game_board, Game.legal_moves)
         self.display_score(Game.white_tiles, Game.black_tiles) 
-        if Game.has_ended(self.game_board):
-            self.display_result(Game.get_winner())
         
     def run(self) -> None:
         self.show()
