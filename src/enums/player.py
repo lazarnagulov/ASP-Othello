@@ -1,6 +1,5 @@
 from enum import Enum
 
-
 class Player(Enum):
     """Player enumaration. BLACK and WHITE. They can only be binary units (0 and 1).
     """

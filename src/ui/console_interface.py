@@ -1,6 +1,6 @@
-from models.player import Player
-from models.board_symbol import BoardSymbol, get_symbol
-from models.game_result import GameResult
+from enums.player import Player
+from enums.board_symbol import BoardSymbol, get_symbol
+from enums.game_result import GameResult
 from game.game import Game
 from game.bot import Bot
 from models.board import Board
@@ -54,7 +54,7 @@ class ConsoleInterface(UserInterface):
     def display_current_player(board, current_player: Player) -> None:
         print(f"Current player: {get_symbol(current_player)}")
    
-    def display_score(board, white_tiles: int, black_tiles: int) -> None:
+    def display_score(self, white_tiles: int, black_tiles: int) -> None:
         print(f"{get_symbol(Player.WHITE)}: {white_tiles} - {get_symbol(Player.BLACK)}: {black_tiles}")
         
     def display_board(self, board: Board, legal_moves: dict[tuple[int, int], list[tuple[int, int]]]) -> None:
