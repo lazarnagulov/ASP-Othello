@@ -2,7 +2,16 @@ from .player import Player
 from enum import Enum
 
 class BoardSymbol(Enum):
-    """BoardSyombol enumeration. WHITE, BLACK EMPTY and LEGAL_MOVE
+    """Enumeration representing symbols used on the game board.
+
+    Members:
+        WHITE: Symbol representing the white player (○).
+        BLACK: Symbol representing the black player (●).
+        EMPTY: Symbol indicating an empty space (□).
+        LEGAL_MOVE: Symbol indicating a legal move position (■).
+
+    This enumeration provides a clear visual representation of the 
+    game board's state, making it easier to interpret during gameplay.
     """
     WHITE = "○"
     BLACK = "●"
@@ -19,15 +28,14 @@ class BoardSymbol(Enum):
         return self.value
 
 def get_symbol(player: Player) -> BoardSymbol:
-    """Converts player to symbol.
-    
+    """Converts the specified player to their corresponding board symbol.
+
     Args:
-        player (Player): player
+        player (Player): The player whose symbol is to be determined.
 
     Returns:
-        BoardSymbol: player's symbol
+        BoardSymbol: The board symbol associated with the player; 
+        returns BoardSymbol.BLACK for the black player and 
+        BoardSymbol.WHITE for the white player.
     """
-    if player == Player.BLACK:
-        return BoardSymbol.BLACK
-    else:
-        return BoardSymbol.WHITE
+    return BoardSymbol.BLACK if player == Player.BLACK else BoardSymbol.WHITE
