@@ -1,3 +1,4 @@
+from typing import Optional, cast
 from enums.game_result import GameResult
 from enums.player import Player
 from enums.color import Color, get_color
@@ -76,21 +77,21 @@ class GUI(UserInterface):
         self.window.setLayout(self.main_layout)
         self.window.setWindowTitle('Othello')
 
-    def handle_click(self):
-        if(not Game.play(self.game_board, Game.current_player, self.window.sender().position)):
+    def handle_click(self) -> None:
+        if(not Game.play(self.game_board, Game.current_player, cast(Tile, self.window.sender()).position)):
             return
         Game.switch_player()
         Game.legal_moves = Game.get_moves(self.game_board, Game.current_player)
         self.display_current_player(Game.current_player)
         self.display_board(self.game_board, Game.legal_moves)
-        self.display_score(Game.white_tiles, Game.black_tiles)        
+        self.display_score(Game.white_tiles, Game.black_tiles) 
         if Game.has_ended(self.game_board):
             self.display_result(Game.get_winner())
         
     def run(self) -> None:
         self.window.show()
         sys.exit(self.app.exec_())
-    
+         
     def display_current_player(self, current_player: Player) -> None: 
         self.current_player.setText(f"Current player: {current_player.name}")
     
