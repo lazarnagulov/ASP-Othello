@@ -29,7 +29,7 @@ class Game:
                 opponents: list[tuple[int, int]] = Game.__is_legal_move(board, player, (x,y))
                 if opponents:
                     moves[(x,y)] = opponents
-        
+
         return moves
         
     @staticmethod

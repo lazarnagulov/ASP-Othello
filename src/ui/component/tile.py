@@ -9,13 +9,13 @@ from enums.color import Color
 
 class Tile(QPushButton):
     
-    def __init__(self, color: Optional[Color]) -> None:
+    def __init__(self, color: Optional[Color], position: tuple[int, int]) -> None:
         super().__init__()
         self.color: Optional[str] = color.value if color is not None else None
+        self.position: tuple[int, int] = position
         self.setFixedSize(50, 50)
     
     def paintEvent(self, _: Optional[QPaintEvent]) -> None:
-        
         painter: QPainter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
         painter.setBrush(self.palette().button())
@@ -32,8 +32,8 @@ class Tile(QPushButton):
     def sizeHint(self) -> QSize:
         return QSize(100, 100)
 
-    def set_color(self, color: Color) -> None:
-        self.color = color.value
+    def set_color(self, color: Optional[Color]) -> None:
+        self.color = color.value if color is not None else None
         self.update()
 
 
