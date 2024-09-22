@@ -13,7 +13,7 @@ def main() -> None:
             case "--ui" | "-u": ui = GUI()
             case _: ui = GUI()
     else:
-        ui = ConsoleInterface()
+        ui = GUI()
 
     ui.run()
     

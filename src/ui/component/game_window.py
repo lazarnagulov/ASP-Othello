@@ -28,12 +28,12 @@ class GameWindow(QWidget):
 
     def __init__(self, argv: list[str]) -> None:
         super().__init__()
-        self.bot_on: bool = False
+        self.bot_on: bool = True
         if len(argv) == 3:
             match argv[2]:
                 case '--bot' | '-b': self.bot_on = True
                 case '--player' | '-p': self.bot_on = False
-                case _: self.bot_on = False
+                case _: self.bot_on = True
 
         
         self.game_board: Board = Board()
