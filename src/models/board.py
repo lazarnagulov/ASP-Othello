@@ -5,14 +5,18 @@ import util.matrix as Matrix
 
 class Board:
     """
-    Othello board class. Board is represented by two 64 bit binary numbers. Occupied are all occupied positions on board (1 if occupied 0 if not)
-    and color are all tiles position on board (1 if tile is white, 0 if tile is black). 
+    Othello board class.
+
+    The board is represented by two 64-bit binary numbers:
+    - `occupied`: Indicates whether each position on the board is occupied (1 if occupied, 0 if not).
+    - `color`: Represents the color of the tiles (1 for white, 0 for black).
     """
+
     SIZE: int = 8
     """
-    Othello board size = 8
+    Othello board size, which is 8.
     """
-    
+        
     def __init__(self) -> None:
         """
         Create board with starting tiles.         
@@ -27,53 +31,60 @@ class Board:
 
     
     def is_occupied(self, position: tuple[int, int]) -> bool:
-        """Checks if board is occupied in position.
+        """
+        Check if the specified position on the board is occupied.
 
         Args:
-            position (tuple[int, int]): position (row, column)
+            position (tuple[int, int]): A tuple representing the position (row, column).
 
         Returns:
-            bool: True if position is occupied 
+            bool: True if the position is occupied, False otherwise.
         """
         return bool((self.occupied & Matrix.DECODE_MATRIX[position[0]][position[1]]) >> (position[0] * 8 + position[1])) 
 
     def get_tile_color(self, position: tuple[int, int]) -> int:
-        """Gets the color in position.
+        """
+        Retrieve the color at the specified position.
 
         Args:
-            position (tuple[int, int]): position (row, column)
+            position (tuple[int, int]): A tuple representing the position (row, column).
 
         Returns:
-            int: Returns player in position. If position is empty, returns -1
+            int: The player in the specified position. Returns -1 if the position is empty.
         """
         if self.is_occupied(position):
             return (self.color & Matrix.DECODE_MATRIX[position[0]][position[1]]) >> (position[0] * 8 + position[1])
         return -1
         
     def replace_opponent(self, position: tuple[int, int]) -> None:
-        """Reverse tile on position. Does nothing if position is empty.
+        """
+        Reverse the tile at the specified position.
+
+        If the position is empty, this method does nothing.
 
         Args:
-            position (tuple[int, int]): position (row, column)
+            position (tuple[int, int]): A tuple representing the position (row, column).
         """
         self.color ^= Matrix.DECODE_MATRIX[position[0]][position[1]]
     
     def set_tile(self, position: tuple[int, int], player: Player) -> None:
-        """Occupies tile on position.
+        """
+        Occupy the tile at the specified position.
 
         Args:
-            position (tuple[int, int]): position (row, column)
-            player (Player): player
+            position (tuple[int, int]): A tuple representing the position (row, column).
+            player (Player): The player occupying the tile.
         """
         self.occupied |= Matrix.DECODE_MATRIX[position[0]][position[1]]
         if player == Player.WHITE:
             self.color |= Matrix.DECODE_MATRIX[position[0]][position[1]]    
             
     def deepcopy(self) -> 'Board':
-        """Deepcopies Board object.
+        """
+        Create a deep copy of the Board object.
 
         Returns:
-            Board: copied board
+            Board: A new instance of the Board that is a copy of the original.
         """
         new_board = Board()
         new_board.color = self.color
