@@ -1,92 +1,24 @@
-from typing import Optional, cast
 from enums.game_result import GameResult
 from enums.player import Player
 from enums.color import Color, get_color
 
+from ui.component.game_window import GameWindow
 from ui.user_interface import UserInterface
-from ui.component.tile import Tile
 from models.board import Board
-from game.bot import Bot
 from game.game import Game
 
 import sys
 
 from PyQt5.QtWidgets import (
     QApplication, 
-    QWidget, 
-    QHBoxLayout, 
-    QLabel, 
-    QHBoxLayout, 
-    QGridLayout, 
-    QVBoxLayout,
     QMessageBox
 )
 
 class GUI(UserInterface):    
 
-    def __init__(self) -> None:
-        self.game_board: Board = Board()
-        self.bot: Bot = Bot()
-        Game.legal_moves = Game.get_moves(self.game_board, Game.current_player)
-        
+    def __init__(self) -> None:        
         self.app: QApplication = QApplication(sys.argv)      
-        self.window: QWidget = QWidget()
-        self.window.setFixedSize(400,400)
-        self.current_player: QLabel = QLabel("Current Player: Black")
-        self.current_score: QLabel = QLabel("Score - Black: 2, White: 2")
-
-        self.stats_layout: QHBoxLayout = QHBoxLayout()
-        self.stats_layout.addWidget(self.current_player)
-        self.stats_layout.addStretch(1)
-        self.stats_layout.addWidget(self.current_score)
-
-        self.main_layout: QVBoxLayout = QVBoxLayout()
-        self.main_layout.addLayout(self.stats_layout)
-        
-        self.grid: QGridLayout = QGridLayout()
-        self.grid.setSpacing(0)
-        self.grid.setContentsMargins(0, 0, 0, 0)
-        
-        self.buttons: list[Tile] = []
-
-        for row in range(8):
-            for col in range(8):
-                button: Tile = Tile(None, (row, col))
-                
-                if (row + col) % 2 == 0:
-                    button.setStyleSheet("background-color: green;")  
-                else:
-                    button.setStyleSheet("background-color: darkgreen;")
-                
-                if (row == 2 and col == 3) or (row == 3 and col == 2) \
-                or (row == 4 and col == 5) or (row == 5 and col == 4):
-                    button.set_color(Color.GRAY)
-                
-                if (row == 3 and col == 3) or (row == 4 and col == 4):
-                    button.set_color(Color.WHITE)
-                if (row == 3 and col == 4) or (row == 4 and col == 3):
-                    button.set_color(Color.BLACK) 
-                
-                button.clicked.connect(self.handle_click)
-
-                self.grid.addWidget(button, row, col)
-                self.buttons.append(button)
-
-        self.main_layout.addLayout(self.grid)
-
-        self.window.setLayout(self.main_layout)
-        self.window.setWindowTitle('Othello')
-
-    def handle_click(self) -> None:
-        if(not Game.play(self.game_board, Game.current_player, cast(Tile, self.window.sender()).position)):
-            return
-        Game.switch_player()
-        Game.legal_moves = Game.get_moves(self.game_board, Game.current_player)
-        self.display_current_player(Game.current_player)
-        self.display_board(self.game_board, Game.legal_moves)
-        self.display_score(Game.white_tiles, Game.black_tiles) 
-        if Game.has_ended(self.game_board):
-            self.display_result(Game.get_winner())
+        self.window = GameWindow()
         
     def run(self) -> None:
         self.window.show()
