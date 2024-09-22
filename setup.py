@@ -2,7 +2,11 @@ from setuptools import setup, find_packages
 
 setup(
     name='Othello',
-    version='1.1',
+    version='2.0',
+    author="Lazar Nagulov",
+    description="Implementation of Othello game.",
+    long_description=open("README.md").read(),
+    long_description_content_type="text/markdown",
     packages=find_packages(where='src'),
     package_dir={'': 'src'},
     install_requires=[
@@ -11,11 +15,6 @@ setup(
     extras_require={
         'dev': [
             'mypy',
-        ],
-    },
-    entry_points={
-        'console_scripts': [
-            'run=main:main',  
         ],
     },
 )

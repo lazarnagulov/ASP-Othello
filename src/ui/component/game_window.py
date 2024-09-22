@@ -86,7 +86,7 @@ class GameWindow(QWidget):
         self.main_layout.addLayout(self.grid)
 
         self.setLayout(self.main_layout)
-        self.setWindowTitle('Othello')
+        self.setWindowTitle(f"Othello {'PvB' if self.bot_on else 'PvP'}")
 
     def handle_click(self) -> None:
         if Game.play(self.game_board, Game.current_player, cast(Tile, self.sender()).position):

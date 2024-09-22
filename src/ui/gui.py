@@ -1,3 +1,4 @@
+from pathlib import Path
 from enums.game_result import GameResult
 
 from ui.component.game_window import GameWindow
@@ -5,16 +6,19 @@ from ui.user_interface import UserInterface
 
 import sys
 
-from PyQt5.QtWidgets import (
-    QApplication, 
-    QMessageBox
-)
+from PyQt5.QtWidgets import QApplication
+from PyQt5.QtGui import QIcon
+
+
 
 class GUI(UserInterface):    
 
     def __init__(self) -> None:        
         argv: list[str] = sys.argv
-        self.app: QApplication = QApplication(argv)      
+        self.app: QApplication = QApplication(argv)  
+        sorce_dir: Path = Path(__file__).resolve().parent.parent.parent
+        icon_dir: str = str(sorce_dir / "img" / "logo.png")
+        self.app.setWindowIcon(QIcon(icon_dir))   
         self.window = GameWindow(argv)
         
     def run(self) -> None:
