@@ -1,9 +1,10 @@
 # Othello
-Project for Algorithms and Data Structures course.
-## Overview
-Welcome to the Othello game project! This Python implementation originally featured a console-only mode for Player vs Bot. It has now been updated to include two modes of play: **Player vs Player** and **Player vs Bot**. The project also offers two interfaces: a **Console Interface** and a **Graphical User Interface (GUI)**, providing an enhanced gaming experience.
+Welcome to the **Othello** game project!
 
 ![Othello Board](img/othello_board.jpg)
+## Overview
+This Python implementation originally featured a console-only mode for Player vs Bot. It has now been updated to include two modes of play: **Player vs Player** and **Player vs Bot**. The project also offers two interfaces: a **Console Interface** and a **Graphical User Interface (GUI)**, providing an enhanced gaming experience.
+
 
 ### Interfaces
 - **Graphical User Interface (GUI)**
@@ -34,19 +35,19 @@ python3 ./src/main.py
 ## Command Options
 
 You can customize your game mode with the following command-line options:
-- Console - vs Bot
+- **Console** Player vs Bot
 ```
 python3 ./src/main.py [--console | -c] [--bot | -b]
 ```
-- Console - vs Player
+- **Console** Player vs Player
 ```
 python3 ./src/main.py [--console | -c] [--player | -p]
 ```
-- GUI - vs Bot
+- **GUI** Player vs Bot
 ```
 python3 ./src/main.py [--gui | -g] [--bot | -b]
 ```
-- GUI - vs Player
+- **GUI** Player vs Player
 ```
 python3 ./src/main.py [--gui | -g] [--player | -p]
 ```
