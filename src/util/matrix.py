@@ -10,8 +10,14 @@ DECODE_MATRIX: list[list[int]] = [
         [0x1000000000000, 0x2000000000000, 0x4000000000000, 0x8000000000000, 0x10000000000000, 0x20000000000000, 0x40000000000000, 0x80000000000000], 
         [0x100000000000000, 0x200000000000000, 0x400000000000000, 0x800000000000000, 0x1000000000000000, 0x2000000000000000, 0x4000000000000000, 0x8000000000000000]
     ]
-"""Matrix of bit masks that decodes board.
 """
+A matrix of bit masks used to decode the game board state.
+
+Each entry in the matrix corresponds to a specific board position and represents 
+a unique bitmask that can be used for efficient state encoding and decoding 
+during game evaluations.
+"""
+
 
 HEURISTIC_MATRIX: list[list[int]] = [
         [20, -3, 11, 8, 8, 11, -3, 20],
@@ -23,9 +29,21 @@ HEURISTIC_MATRIX: list[list[int]] = [
         [-3, -7, -4, 1, 1, -4, -7, -3],
         [20, -3, 11, 8, 8, 11, -3, 20]
     ]
-"""Matrix used for heuristic.
+"""
+A matrix used to evaluate heuristics for the game.
+
+This matrix contains heuristic values for different board positions, 
+which helps the algorithm assess the desirability of each state during 
+gameplay. The values are designed to guide the decision-making process 
+in favor of optimal moves.
 """
 
 DIRECTIONS: list[tuple[int,int]] = [(0,1), (1,0), (-1,0), (0,-1), (1,1), (-1,1), (1,-1), (-1,-1)]
-"""All possible directions in matrix.
+"""
+A list of all possible directions represented in the matrix.
+
+Each direction corresponds to a potential movement or action within the game, 
+defined as vectors that indicate how to navigate the game board. This can 
+include horizontal, vertical, and diagonal movements, facilitating 
+move generation and evaluation during gameplay.
 """

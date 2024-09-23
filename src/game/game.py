@@ -1,8 +1,7 @@
-from game.board import Board
+from models.board import Board
 from typing import Optional
-from models.board_symbol import BoardSymbol, get_symbol
-from models.game_results import GameResult
-from models.player import Player, get_opponent
+from enums.game_result import GameResult
+from enums.player import Player, get_opponent
 import util.matrix as Matrix
 
 class Game:
@@ -15,14 +14,16 @@ class Game:
     
     @staticmethod
     def get_moves(board: Board, player: Player) -> dict[tuple[int, int], list[tuple[int, int]]]:
-        """Gets all possible moves for player.
+        """Gets all possible moves for the specified player.
 
         Args:
-            board (Board): board
-            player (Player): player
+            board (Board): The current state of the game board.
+            player (Player): The player for whom to find possible moves.
 
         Returns:
-            dict[tuple[int, int], list[list[Player]]]: All possible moves (position) : [opponents]
+        
+            dict[tuple[int, int], list[tuple[int, int]]]: A dictionary mapping each possible move (position) 
+            to a list of opponent positions that can be captured or affected by that move.
         """
         moves: dict[tuple[int,int],list[tuple[int,int]]] = {}
         for x in range(Board.SIZE):
@@ -30,106 +31,28 @@ class Game:
                 opponents: list[tuple[int, int]] = Game.__is_legal_move(board, player, (x,y))
                 if opponents:
                     moves[(x,y)] = opponents
-        
+
         return moves
         
     @staticmethod
-    def __is_inside_board(position: tuple[int, int]) -> bool:
-        """Checks if position is inside of board
-
-        Args:
-            position (tuple[int, int]): position (row, column)
-
-        Returns:
-            bool: True if position is inside, False if it is not.
-        """
-        return (position[0] >= 0 and position[0] < Board.SIZE) and (position[1] >= 0 and position[1] < Board.SIZE)
-    
-    @staticmethod
-    def __get_opponents_in_dir(board: Board, player: Player, position: tuple[int, int], direction: tuple[int, int]) -> list[tuple[int, int]]:
-        """Gets all opponents in direction
-
-        Args:
-            board (Board): board
-            player (Player): player
-            position (tuple[int, int]): position (row, column)
-            direction (tuple[int, int]): direction - Matrix.DIRECTIONS
-
-        Returns:
-            list[tuple[int, int]]: list of all opponents and their position
-        """
-        opponents: list[tuple[int, int]] = []
-        current_position: tuple[int, int] = (position[0] + direction[0], position[1] + direction[1])
-        opponent: Player = get_opponent(player)
-
-        while Game.__is_inside_board(current_position) and board.is_occupied(current_position):
-            if board.get_tile_color(current_position) == opponent:
-                opponents += [current_position]
-                current_position = (current_position[0] + direction[0], current_position[1] + direction[1])
-            else:
-                return opponents
-        
-        return []
-
-    
-    @staticmethod
-    def __get_opponents(board: Board, player: Player, position: tuple[int, int]) -> list[tuple[int, int]]:
-        """Gets all opponents.
-
-        Args:
-            board (Board): board
-            player (Player): player
-            position (tuple[int, int]): position (row, column)
-
-        Returns:
-            list[tuple[int, int]]: All opponents and their positions
-        """
-        opponents: list[tuple[int, int]] = []
-        for direction in Matrix.DIRECTIONS:
-            opps: list[tuple[int, int]] = Game.__get_opponents_in_dir(board, player, position, direction)    
-            if not opps:
-                continue
-            opponents += opps
-        return opponents        
-    
-    @staticmethod
-    def __is_legal_move(board: Board, player: Player, position: tuple[int, int]) -> list[tuple[int, int]]:
-        """Checks if move is possible to make.
-
-        Args:
-            board (Board): board
-            player (Player): player
-            position (tuple[int, int]): postion (row, column)
-
-        Returns:
-            list[tuple[int, int]]: Empty list if it is not possible, list of all oppoenents if it is.
-        """
-        if board.is_occupied(position):
-            return []
-        
-        return Game.__get_opponents(board, player, position)
-        
-    @staticmethod
     def has_ended(board: Board) -> bool:
-        if Game.get_moves(board, Player.BLACK) == {}:
-            return True
-        elif Game.get_moves(board, Player.WHITE) == {}:
+        if len(Game.get_moves(board, Game.current_player)) == 0 and len(Game.get_moves(board, Player.WHITE)) == 0:
             return True
         
         return False
-    
-    @staticmethod
-    def print_status(board: Board):
-        Game.__print_current_player()
-        Game.__print_score()
-        Game.__print_board(board)
-    
+        
     @staticmethod
     def get_winner() -> GameResult:
-        """Gets winner if the game has ended.
+        """Determines the winner of the game if it has concluded.
 
         Returns:
-            GameResult: Game result
+            
+            GameResult: An enumeration representing the outcome of the game. 
+            Possible values include:
+                - GameResult.WHITE_WINS: The white player has won.
+                - GameResult.BLACK_WINS: The black player has won.
+                - GameResult.DRAW: The game ended in a draw.
+                - GameResult.NO_WINNER: The game is still ongoing.
         """
         if Game.white_tiles > Game.black_tiles:
             return GameResult.WHITE_WINS
@@ -141,16 +64,18 @@ class Game:
     
     @staticmethod
     def play(board: Board, player: Player, position: tuple[int, int], legal_moves: Optional[dict[tuple[int, int], list[tuple[int, int]]]] = None, bot: bool = False) -> bool:
-        """Play a turn.
+        """Executes a turn for the specified player at the given position.
 
         Args:
-            board (Board): board
-            player (Player): player
-            position (tuple[int, int]): position (row, column)
-            legal_moves (dict[tuple[int, int], list[tuple[int, int]]], optional): Legal moves. Defaults to Game.legal_moves.
-            bot (bool): True if bot calls method. Defaults to False
+            board (Board): The current state of the game board.
+            player (Player): The player making the move.
+            position (tuple[int, int]): The coordinates of the position (row, column) where the player wants to play.
+            legal_moves (Optional[dict[tuple[int, int], list[tuple[int, int]]]]): A dictionary of legal moves available 
+                for the player. Defaults to None, which uses the game's legal moves.
+            bot (bool): Indicates whether the method is called by a bot. Defaults to False.
+
         Returns:
-            bool: True if move is possible to make, False if it is not
+            bool: True if the move was successfully executed; False if the move is not possible.
         """
         if not legal_moves:
             legal_moves = Game.legal_moves
@@ -174,14 +99,16 @@ class Game:
 
     @staticmethod
     def get_board_score(board: Board, player: Player) -> float:
-        """Calculate board score.
+        """Calculates the score of the current board state for the specified player.
 
         Args:
-            board (Board): board
-            player (Player): player
+            board (Board): The current state of the game board.
+            player (Player): The player for whom the score is being calculated.
 
         Returns:
-            float: score
+            float: The calculated score representing the player's advantage or disadvantage 
+            based on the current board configuration. A higher score indicates a more favorable 
+            position for the player.
         """
         opponent: Player = get_opponent(player)
         player_tiles: int = 0
@@ -335,45 +262,89 @@ class Game:
         return score
 
     @staticmethod
-    def __print_current_player():
-        """Prints current player.
-        """
-        print(f"Current player: {get_symbol(Game.current_player)}")
-
-    @staticmethod
-    def __print_score():
-        """Prints current score.
-        """
-        print(f"{get_symbol(Player.WHITE)}: {Game.white_tiles} - {get_symbol(Player.BLACK)}: {Game.black_tiles}")
-
-    @staticmethod
     def switch_player() -> None:
         """Switches current player.
         """
         Game.current_player = get_opponent(Game.current_player)
     
+            
     @staticmethod
-    def __print_board(self) -> None:
-        string_board: str = "# "
-        for i in range(Board.SIZE):
-            string_board += str(i) + " "
-        string_board += "\n"
-        for x in range(Board.SIZE):
-            for y in range(Board.SIZE):
-                if y == 0:
-                    string_board += str(x) + " "
-                occupied: int = self.is_occupied( (x,y))
-                if occupied:
-                    color: int = self.get_tile_color((x,y))
-                    if color == Player.WHITE:
-                        string_board += BoardSymbol.WHITE + " "
-                    else:
-                        string_board += BoardSymbol.BLACK + " "
-                elif (x,y) in Game.legal_moves:
-                    string_board += BoardSymbol.LEGAL_MOVE + " "
-                else:
-                    string_board += BoardSymbol.EMPTY + " "
-            string_board += "\n"
+    def __is_inside_board(position: tuple[int, int]) -> bool:
+        """Checks if the given position is within the boundaries of the board.
 
-        print(string_board)
+        Args:
+            position (tuple[int, int]): The position to check, represented as (row, column).
+
+        Returns:
+            bool: True if the position is within the board's boundaries; 
+                False if it is outside.
+        """
+        return (position[0] >= 0 and position[0] < Board.SIZE) and (position[1] >= 0 and position[1] < Board.SIZE)
+    
+    @staticmethod
+    def __get_opponents_in_dir(board: Board, player: Player, position: tuple[int, int], direction: tuple[int, int]) -> list[tuple[int, int]]:
+        """Retrieves all opponent pieces in the specified direction from a given position.
+
+        Args:
+            board (Board): The current state of the game board.
+            player (Player): The player for whom the check is being performed.
+            position (tuple[int, int]): The starting position (row, column) from which to check.
+            direction (tuple[int, int]): The direction to check, represented as a vector (row_offset, column_offset) 
+                                        from the Matrix.DIRECTIONS.
+
+        Returns:
+            list[tuple[int, int]]: A list of positions (row, column) of all opponent pieces found in the specified direction.
+        """
+        opponents: list[tuple[int, int]] = []
+        current_position: tuple[int, int] = (position[0] + direction[0], position[1] + direction[1])
+        opponent: Player = get_opponent(player)
+
+        while Game.__is_inside_board(current_position) and board.is_occupied(current_position):
+            if board.get_tile_color(current_position) == opponent:
+                opponents += [current_position]
+                current_position = (current_position[0] + direction[0], current_position[1] + direction[1])
+            else:
+                return opponents
         
+        return []
+
+    
+    @staticmethod
+    def __get_opponents(board: Board, player: Player, position: tuple[int, int]) -> list[tuple[int, int]]:
+        """Retrieves all opponent pieces adjacent to the specified position.
+
+        Args:
+            board (Board): The current state of the game board.
+            player (Player): The player for whom the check is being performed.
+            position (tuple[int, int]): The position (row, column) from which to check for opponents.
+
+        Returns:
+            list[tuple[int, int]]: A list of positions (row, column) of all opponent pieces adjacent 
+            to the specified position.
+        """
+        opponents: list[tuple[int, int]] = []
+        for direction in Matrix.DIRECTIONS:
+            opps: list[tuple[int, int]] = Game.__get_opponents_in_dir(board, player, position, direction)    
+            if not opps:
+                continue
+            opponents += opps
+        return opponents        
+    
+    @staticmethod
+    def __is_legal_move(board: Board, player: Player, position: tuple[int, int]) -> list[tuple[int, int]]:
+        """Checks if a move to the specified position is legal for the given player.
+
+        Args:
+            board (Board): The current state of the game board.
+            player (Player): The player attempting to make the move.
+            position (tuple[int, int]): The target position (row, column) for the move.
+
+        Returns:
+            list[tuple[int, int]]: An empty list if the move is not legal; 
+            otherwise, a list of positions (row, column) of all opponent pieces 
+            that would be captured by the move.
+        """
+        if board.is_occupied(position):
+            return []
+        
+        return Game.__get_opponents(board, player, position)
