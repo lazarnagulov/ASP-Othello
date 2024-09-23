@@ -13,8 +13,7 @@ from PyQt5.QtGui import QIcon
 
 class GUI(UserInterface):    
 
-    def __init__(self) -> None:        
-        argv: list[str] = sys.argv
+    def __init__(self, argv: list[str]) -> None:        
         self.app: QApplication = QApplication(argv)  
         sorce_dir: Path = Path(__file__).resolve().parent.parent.parent
         icon_dir: str = str(sorce_dir / "img" / "logo.png")

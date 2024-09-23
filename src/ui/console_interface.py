@@ -10,14 +10,26 @@ from .user_interface import UserInterface
 
 class ConsoleInterface(UserInterface):
 
+    def __init__(self, argv: list[str]) -> None:
+        self.bot_on: bool = True
+        if len(argv) == 3:
+            match argv[2]:
+                case '--bot' | '-b': self.bot_on = True
+                case '--player' | '-p': self.bot_on = False
+                case _: self.bot_on = True
+                
     def run(self) -> None:
-        
+      
         game_board: Board = Board()
-        bot: Bot = Bot()    
+        if self.bot_on:
+            bot: Bot = Bot()    
     
         while True:
             Game.legal_moves = Game.get_moves(game_board, Game.current_player)
+            print("============================================")
+            self.display_current_player(Game.current_player)
             self.display_score(Game.white_tiles, Game.black_tiles)
+            print("============================================")
             self.display_board(game_board, Game.legal_moves)
             if Game.has_ended(game_board):
                 self.display_score(Game.white_tiles, Game.black_tiles)
@@ -27,12 +39,14 @@ class ConsoleInterface(UserInterface):
 
             while True:
                 try:
-                    print("Input: <row>,<column>")
+                    print("Please enter your move in the format: <row>,<column>")
+                    print("For example: 3,5 (to place a piece at row 3, column 5)")
+                    print("Type 'exit' to quit the program at any time.")
                     op: str = input(">> ")
                     if op == "exit":
                         return
-                    (x,y) = op.split(",")
-                
+                    x,y = op.split(",")
+
                     if Game.play(game_board, Game.current_player, (int(x),int(y))):
                         Game.switch_player()
                         self.display_score(Game.white_tiles, Game.black_tiles)
@@ -41,15 +55,15 @@ class ConsoleInterface(UserInterface):
                 except:
                         print("Invalid input!")
                         continue
+            if self.bot_on:
+                bot_move: Optional[tuple[int, int]] = bot.bot_move(game_board)
+                if bot_move:
+                    Game.play(game_board, Game.current_player, bot_move, Game.get_moves(game_board, Player.WHITE))
+                else:
+                    self.display_result(Game.get_winner())
+                    break
             
-            bot_move: Optional[tuple[int, int]] = bot.bot_move(game_board)
-            if bot_move:
-                Game.play(game_board, Game.current_player, bot_move, Game.get_moves(game_board, Player.WHITE))
-            else:
-                self.display_result(Game.get_winner())
-                break
-            
-            Game.switch_player()            
+                Game.switch_player()            
     
     def display_current_player(board, current_player: Player) -> None:
         print(f"Current player: {get_symbol(current_player)}")

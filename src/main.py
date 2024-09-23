@@ -6,14 +6,14 @@ import sys
 
 def main() -> None:
     ui: Optional[UserInterface] = None
-    
-    if len(sys.argv) != 1:
-        match sys.argv[1]:
-            case "--console" | "-c": ui = ConsoleInterface()
-            case "--ui" | "-u": ui = GUI()
-            case _: ui = GUI()
+    argv: list[str] = sys.argv
+    if len(argv) != 1:
+        match argv[1]:
+            case "--console" | "-c": ui = ConsoleInterface(argv)
+            case "--ui" | "-u": ui = GUI(argv)
+            case _: ui = GUI(argv)
     else:
-        ui = GUI()
+        ui = GUI(argv)
 
     ui.run()
     
