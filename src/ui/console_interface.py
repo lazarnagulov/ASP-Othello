@@ -26,10 +26,10 @@ class ConsoleInterface(UserInterface):
     
         while True:
             Game.legal_moves = Game.get_moves(game_board, Game.current_player)
-            print("============================================")
+            print("=====================================================")
             self.display_current_player(Game.current_player)
             self.display_score(Game.white_tiles, Game.black_tiles)
-            print("============================================")
+            print("=====================================================")
             self.display_board(game_board, Game.legal_moves)
             if Game.has_ended(game_board):
                 self.display_score(Game.white_tiles, Game.black_tiles)
