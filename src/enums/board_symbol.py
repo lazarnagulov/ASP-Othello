@@ -1,4 +1,4 @@
-from .player import Player
+from enums.player import Player
 from enum import Enum
 
 class BoardSymbol(Enum):

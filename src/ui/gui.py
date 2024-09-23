@@ -1,5 +1,4 @@
 from pathlib import Path
-from enums.game_result import GameResult
 
 from ui.component.game_window import GameWindow
 from ui.user_interface import UserInterface

@@ -3,7 +3,6 @@ from enums.game_result import GameResult
 from enums.player import Player
 from enums.color import Color, get_color
 
-from ui.user_interface import UserInterface
 from ui.component.tile import Tile
 from models.board import Board
 from game.bot import Bot
