@@ -92,20 +92,32 @@ class GameWindow(QWidget):
                 self.update_game_state()            
                 QTimer.singleShot(10, self.handle_bot_move) 
             else:
-                self.update_game_state()
                 if Game.has_ended(self.game_board):
+                    self.update_game_state()
                     self.display_result(Game.get_winner())
+                    self.close()
+                    return 
+                
+                self.update_game_state()
+
         
     def handle_bot_move(self) -> None:
         bot_move: Optional[tuple[int, int]] = self.bot.bot_move(self.game_board)
         if bot_move:
             Game.play(self.game_board, Game.current_player, bot_move, Game.get_moves(self.game_board, Player.WHITE))
         else:
+            self.update_game_state()
             self.display_result(Game.get_winner())
+            self.close()
+            return            
 
-        self.update_game_state()
         if Game.has_ended(self.game_board):
+            self.update_game_state()
             self.display_result(Game.get_winner())
+            self.close()
+            return 
+        
+        self.update_game_state()
 
 
     def update_game_state(self) -> None:

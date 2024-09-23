@@ -36,11 +36,7 @@ class Game:
         
     @staticmethod
     def has_ended(board: Board) -> bool:
-        if not Game.get_moves(board, Player.BLACK):
-            print(Player.BLACK)
-            return True
-        elif not Game.get_moves(board, Player.WHITE):
-            print(Player.WHITE)
+        if len(Game.get_moves(board, Game.current_player)) == 0 and len(Game.get_moves(board, Player.WHITE)) == 0:
             return True
         
         return False
