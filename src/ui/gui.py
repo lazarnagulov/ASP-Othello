@@ -10,7 +10,6 @@ from PyQt5.QtWidgets import QApplication
 from PyQt5.QtGui import QIcon
 
 
-
 class GUI(UserInterface):    
 
     def __init__(self, argv: list[str]) -> None:        
@@ -20,6 +19,7 @@ class GUI(UserInterface):
         self.app.setWindowIcon(QIcon(icon_dir))   
         self.window = GameWindow(argv)
         
+    
     def run(self) -> None:
         self.window.show()
         sys.exit(self.app.exec_())

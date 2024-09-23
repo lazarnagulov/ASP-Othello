@@ -12,14 +12,13 @@ from game.game import Game
 import sys
 
 from PyQt5.QtWidgets import (
-    QApplication, 
     QWidget, 
     QHBoxLayout, 
     QLabel, 
     QHBoxLayout, 
     QGridLayout, 
     QVBoxLayout,
-    QMessageBox
+    QMessageBox,
 )
 
 from PyQt5.QtCore import QTimer
@@ -41,7 +40,6 @@ class GameWindow(QWidget):
             self.bot: Bot = Bot()
         Game.legal_moves = Game.get_moves(self.game_board, Game.current_player)
         
-        self.app: QApplication = QApplication(sys.argv)      
         self.setFixedSize(400,400)
         self.current_player: QLabel = QLabel("Current Player: Black")
         self.current_score: QLabel = QLabel("Score - Black: 2, White: 2")
@@ -94,9 +92,9 @@ class GameWindow(QWidget):
                 self.update_game_state()            
                 QTimer.singleShot(10, self.handle_bot_move) 
             else:
+                self.update_game_state()
                 if Game.has_ended(self.game_board):
                     self.display_result(Game.get_winner())
-                self.update_game_state()
         
     def handle_bot_move(self) -> None:
         bot_move: Optional[tuple[int, int]] = self.bot.bot_move(self.game_board)
@@ -105,11 +103,11 @@ class GameWindow(QWidget):
         else:
             self.display_result(Game.get_winner())
 
+        self.update_game_state()
         if Game.has_ended(self.game_board):
             self.display_result(Game.get_winner())
-        self.update_game_state()
 
- 
+
     def update_game_state(self) -> None:
         Game.switch_player()  
         Game.legal_moves = Game.get_moves(self.game_board, Game.current_player)
